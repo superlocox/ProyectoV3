@@ -1,0 +1,129 @@
+body {
+  background: #8bb5a6;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #00ff99, #1488CC);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #00ff99, #1488CC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.logo {
+  width: 30%;
+}
+
+.thumbnail img {
+  max-height: 250px;
+  margin: 1%;
+  
+
+}
+.thumbnail{
+  background: white;
+  align-items: center;
+}
+
+.thumbnail .description {
+  color: #7f7f7f;
+  text-align:justify;
+  
+ 
+}
+
+.price {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+
+.col{
+  background: white;
+  margin: 10px;
+  
+}
+
+.clearfix{
+  margin:10px;
+}
+
+.nombre_p{
+  font-size: 20px;
+}
+
+.card-img{
+  display: block;
+  width: 100px;
+  height: 100px;
+  box-sizing: border-box;
+ 
+}
+
+
+table, th, td {
+  border: 1px solid lightgrey;
+  border-collapse: collapse;
+  box-sizing: border-box;
+}
+
+th, td {
+  padding: 2px 4px;
+}
+
+/* images*/
+ol, ul {
+  list-style: none;
+}
+.hand {
+  cursor: pointer;
+  cursor: pointer;
+}
+.cards{
+    padding-left:0;
+}
+.cards li {
+  -webkit-transition: all .2s;
+  -moz-transition: all .2s;
+  -ms-transition: all .2s;
+  -o-transition: all .2s;
+  transition: all .2s;
+  background-image: url('//c2.staticflickr.com/4/3713/20116660060_f1e51a5248_m.jpg');
+  background-position: 0 0;
+  float: left;
+  height: 32px;
+  margin-right: 8px;
+  text-indent: -9999px;
+  width: 51px;
+}
+.cards .mastercard {
+  background-position: -51px 0;
+}
+.cards li {
+  -webkit-transition: all .2s;
+  -moz-transition: all .2s;
+  -ms-transition: all .2s;
+  -o-transition: all .2s;
+  transition: all .2s;
+  background-image: url('//c2.staticflickr.com/4/3713/20116660060_f1e51a5248_m.jpg');
+  background-position: 0 0;
+  float: left;
+  height: 32px;
+  margin-right: 8px;
+  text-indent: -9999px;
+  width: 51px;
+}
+.cards .amex {
+  background-position: -102px 0;
+}
+.cards li {
+  -webkit-transition: all .2s;
+  -moz-transition: all .2s;
+  -ms-transition: all .2s;
+  -o-transition: all .2s;
+  transition: all .2s;
+  background-image: url('//c2.staticflickr.com/4/3713/20116660060_f1e51a5248_m.jpg');
+  background-position: 0 0;
+  float: left;
+  height: 32px;
+  margin-right: 8px;
+  text-indent: -9999px;
+  width: 51px;
+}
+.cards li:last-child {
+  margin-right: 0;
+}

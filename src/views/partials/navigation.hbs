@@ -1,0 +1,109 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">SADE</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Principal <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+        {{#if user}}
+        
+          {{#if user.mensajero}}
+            
+           {{#if user.admin }}
+
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Opciones de Administrador 
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              
+              <a class="dropdown-item" href="/users/singup_administrador">Registrar admins</a>
+         <a class="dropdown-item" href="/productos/add_product">Agregar un artículo</a>
+            <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/users/logout">Desconectarse</a>
+            </div>
+            </li>
+
+
+     {{else}}
+
+     <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               Opciones de Mensajero
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              
+              <a class="dropdown-item" href="/productos/mostrar_productos">Elegir Pedido</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/users/logout">Desconectarse</a>
+            </div>
+          </li>
+  
+            {{/if}}
+           
+
+             {{else}}
+      
+
+               <li class="nav-item">
+            <a class="nav-link" href="/productos/carrito"><i class="fas fa-shopping-cart">CARRITO</i>
+            <span class="badge badge-light">{{session.cart.cantTotal}}</span>
+            </a>
+          </li>
+
+               <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             Mis Opciones
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+             
+                  <a class="dropdown-item" href="/productos/show">Hacer Pedido</a>
+                  <a class="dropdown-item" href="/users/mis_pedidos">Ver mis pedidos</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/users/logout">Desconectarse</a>
+            </div>
+          </li>
+          
+          {{/if}}
+         
+
+           {{else}}
+
+
+            
+           <li class="nav-item">
+            <a class="nav-link" href="/productos/carrito"><i class="fas fa-shopping-cart"></i>
+            <span class="badge badge-light">{{session.cart.cantTotal}}</span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/productos/show">LISTA DE ARTÍCULOS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/signin">INICAR SESIÓN</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users/signup">REGISTRARSE</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/maps/localizacion">Mapa</a>
+          </li>
+          
+          
+        {{/if}}
+       
+      </ul>
+    </div>
+  </div>
+</nav>

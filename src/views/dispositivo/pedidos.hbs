@@ -1,0 +1,102 @@
+<style>
+    .button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+  margin: 25px;
+}
+
+.button:hover {background-color: #3e8e41}
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+</style>
+
+
+<a class="button " href="/dispositivo/funciones">&laquo; Menú</a>
+
+
+<h1>Los pedidos</h1>
+
+
+{{#each users}}
+
+
+
+{{#each ../pedidos}}
+
+
+{{#if_equal ../id user }}
+
+
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+
+
+
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <ul class="list-group">
+               
+
+           <table border="1px" cellpadding="5px" width="100%"  class="table-light" >
+  <h1>Cliente: {{../name}}</h1>
+             <thead>
+         <tr>
+        <th>Nombre del artículo</th>
+        <th class="text-center">Precio del artículo</th>
+        <th class="text-center">Cantidad del artículo </th>
+        
+        </tr>
+    </thead>
+            
+            {{#each cart.items}}
+            <tbody>
+              <tr>
+
+                <td  > {{this.item.nombre_producto}} </td>
+                <td  class="text-center"> <span class="badge">
+                  {{this.item.precio}}
+              </span></td>
+              <td  class="text-center">{{this.cantidad}}</td>
+
+
+              </tr>
+              
+            </tbody>
+
+                {{/each}}
+
+          </ul>
+        </div>
+        <th colspan="1"><strong> Precio Total : RD${{this.cart.precioTotal}} </strong></th>
+        
+     <hr>
+      </div>
+      <div class="panel-footer">Estado del pedido: {{this.estado}} </div>
+     
+
+    </div>
+        
+  </div>
+{{/if_equal}}
+
+{{/each}}
+{{/each}}
+
+
+

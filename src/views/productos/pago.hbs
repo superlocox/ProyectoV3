@@ -1,0 +1,112 @@
+
+<link rel="stylesheet" href="https://jqueryvalidation.org/files/demo/site-demos.css">
+
+
+<div class="panel panel-info">
+    <div class="panel-heading"><span><i class="glyphicon glyphicon-lock"></i></span> Pago Seguro </div>
+    <h4>Monto final: ${{session.cart.precioTotal}}</h4>
+
+    <div id="charge-error" class="alert alert-danger d-none">
+
+   </div>
+
+    <div class="panel-body">
+        <form action="/checkout" method="post" id="checkout-form">
+        <div class="form-group">
+            <label for="name">Nombre del cliente</label>
+            <input type="text" id="name" class="form-control" value="{{user.name}}" disabled="true">
+        </div>
+
+         <div class="form-group">
+            <div class="col-md-12"><strong>Nombre del dueño de la tarjeta:</strong></div>
+            <div class="col-md-12"><input type="text" class="form-control" name="card-holder-name" id="card-card-holder-name" /></div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-12"><strong>Número de tarjeta:</strong></div>
+           
+            <div class="col-md-12"><input type="text" class="form-control" name="card_number" id="card_number" /></div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12"><strong>Código de verificación de la tarjeta (CVC):</strong></div>
+            <div class="col-md-12"><input type="text" class="form-control" name="card_code" id="card-cvc" /></div>
+        </div>
+        <div class="form-group">
+            <div class="col-lg-6 col-md-6">
+                <strong>Fecha de expiración</strong>
+                <div class="w3-col m8">
+                 <input type="text" class="form-control" name="card-expiry-month" id="card-expiry-month" placeholder="Mes" />
+
+                 <input type="text" class="form-control" name="card-expiry-YEAR" id="card-expiry-YEAR" placeholder="Año" />
+                 
+                 </div>
+
+            </div>
+            
+          
+        </div>
+        <div class="form-group">
+            <div class="col-md-12">
+                <span>Pague seguro usando su tarjeta de crédito/débito.</span>
+            </div>
+            <div class="col-md-12">
+                <ul class="cards">
+                    <li class="visa hand">Visa</li>
+                    <li class="mastercard hand">MasterCard</li>
+                    <li class="amex hand">Amex</li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+            
+
+                <button  name="submit" class="btn btn-success">Finalizar pago</button>
+            </div>
+            
+        </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+
+<script>
+    var press= [];
+    window.addEventListener("keydown", function(evt){
+        if(evt.key !="Enter"){
+            press.push(evt.key);
+        }
+        
+    });
+    function setFromCCS(ccs) {
+		var index1 = press.indexOf("%B") + 2;
+		var index2 = press.indexOf("^") + 1;
+		var index3 = press.indexOf("^", index2 + 1) + 1;
+		var cardNumber = ccs.substring( index1, index2 - 1);
+		var expMonth = ccs.substr(index3, 2);
+		var expYear = ccs.substr(index3 + 2, 2);
+		var holderName = ccs.substring(index2, index3 - 1);
+		document.getElementById("card_number").value = cardNumber;
+		document.getElementById("ecard-expiry-monthm").value = expMonth;
+		document.getElementById("card-expiry-YEAR").value = expYear;
+		document.getElementById("card-card-holder-name").value = holderName;
+	};
+
+</script>
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript" src="javascript/checkout.js"></script>
+
+

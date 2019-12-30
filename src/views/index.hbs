@@ -1,0 +1,116 @@
+<div class="jumbotron mt-4">
+  <h1 class="display-4">Sistema Automatizado de Envío</h1>
+  <h2 class="display-5">Sitio Web con Nodejs y Mongodb!</h2>
+  <p class="lead">MODELO MEN</p>
+  <hr class="my-4">
+  <p>MEN Stack (acrónimo para: MongoDB, ExpressJS, NodeJS). <br>-MongoDB: MongoDB es la base de datos líder de NoSQL, que permite a las empresas ser más ágiles y escalables.
+<br>-Express - Express es un marco de aplicación web de node.js mínimo y flexible, que proporciona un conjunto sólido de características para crear aplicaciones web de una sola página o de múltiples páginas, e híbridas.
+<br>-Node.js: Node.js es una plataforma basada en el tiempo de ejecución de JavaScript de Chrome para crear fácilmente aplicaciones de red escalables y rápidas.
+  </p>
+  <a class="btn btn-primary btn-lg" href="https://getbootstrap.com/" role="button">Bootstrap</a>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChSPm7qthyY7znh5vF28ix2tDSC2iYvYo"></script>
+
+
+<style>
+    #map{
+
+        width: 700px;
+        height: 500px;
+       
+        box-sizing: border-box;
+    }
+</style>
+
+
+
+
+
+
+
+<div id="map" ></div>
+
+
+
+<script type="text/javascript">
+
+ google.maps.visualRefresh = true;
+
+ var divMapa = document.getElementById('map');
+ navigator.geolocation.getCurrentPosition( fn_ok, fn_mal);
+ function fn_mal(){}
+ function fn_ok(rta){
+
+     var lat = rta.coords.latitude;
+     var lon = rta.coords.longitude;
+
+     var gLatLon = new google.maps.LatLng(lat, lon);
+     var objConfig = {
+         zoom: 17,
+         center: gLatLon
+     }
+    
+     var gMapa = new google.maps.Map (divMapa,objConfig);
+
+
+      var objMarkerConfig = {
+         position: gLatLon ,
+         map: gMapa,
+         title: "Usted se encuentra aquí"
+     }
+
+
+     var gMarker = new google.maps.Marker(objMarkerConfig);
+
+    
+
+ }
+
+</script>
+
+
+<script>
+    function findMe(){
+
+      var output = document.getElementById('map');
+
+
+        if(navigator.geolocation){
+            console.log("Tu navegador soporta geolocalizacion");
+        }
+
+      
+
+        function localizar(posicion){
+            var latitude = posicion.coords.latitude;
+            var longitude = posicion.coords.longitude;
+
+            //output.innerHTML = "<p>latitud: "+latitude+"<br>Longitud: "+longitude+"</p>";
+
+            //console.log("latitud: "+latitude+" Longitud: "+longitude+")     
+            
+            var img ="https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=AIzaSyChSPm7qthyY7znh5vF28ix2tDSC2iYvYo"
+
+           var imgURL="https://maps.googleapis.com/maps/api/staticmap?center="+latitude+","+longitude+"&size=900x300&markers=color:red%7C"+latitude+","+longitude+"&key=AIzaSyChSPm7qthyY7znh5vF28ix2tDSC2iYvYo";
+
+
+            output.innerHTML ="<img src='"+imgURL+"'>";
+                              
+
+        }
+
+        function error(){
+            console.log("No se pudo obtener la ubicacion");
+        }
+
+
+
+        navigator.geolocation.getCurrentPosition(localizar,error);
+    
+
+
+    }
+</script>
+
+

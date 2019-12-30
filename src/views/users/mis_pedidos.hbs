@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+
+      <h1>Mis pedidos</h1>
+
+      <hr>
+
+      {{#each pedidos}}
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <ul class="list-group">
+
+           <table border="1px" cellpadding="5px" width="100%"  class="table-light" >
+
+             <thead>
+         <tr>
+        <th>Nombre del artículo</th>
+        <th class="text-center">Precio del artículo</th>
+        <th class="text-center">Cantidad del artículo </th>
+        
+        </tr>
+    </thead>
+            
+            {{#each this.items}}
+            <tbody>
+              <tr>
+
+                <td  > {{this.item.nombre_producto}} </td>
+                <td  class="text-center"> <span class="badge">
+                  {{this.item.precio}}
+              </span></td>
+              <td  class="text-center">{{this.cantidad}}</td>
+
+
+              </tr>
+              
+            </tbody>
+
+                {{/each}}
+
+          </ul>
+        </div>
+        <th colspan="1"><strong> Precio Total : RD${{this.cart.precioTotal}} </strong></th>
+     <hr>
+      </div>
+      <div class="panel-footer">Estado del pedido: {{this.estado}} </div>
+      {{/each}}
+
+    </div>
+        
+  </div>
