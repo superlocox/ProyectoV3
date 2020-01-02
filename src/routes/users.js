@@ -129,11 +129,11 @@ router.post('/users/signin', passport.authenticate('local', {
 
 
 
-router.get('/users/confirm_email', (req, res) => {
+router.get('/users/confirm_email',  (req, res) => {
   res.render('users/confirm_email');
 });
 
-router.post('/users/confirm_email', (req, res) => {
+router.post('/users/confirm_email', async(req, res) => {
   asyncs.waterfall([
     function (done) {
       crypto.randomBytes(20,function (err,buf) {
@@ -147,7 +147,7 @@ router.post('/users/confirm_email', (req, res) => {
       User.findOne({email: req.body.email},function (err,user) {
         if(!user){
           req.flash('error','No existe una cuenta con este email');
-          return res.redirect('users/confirm_email');
+          return res.redirect('/users/confirm_email');
 
         }
         user.resetpwToken = token;
@@ -173,7 +173,7 @@ router.post('/users/confirm_email', (req, res) => {
         to: user.email,
         from: 'megalaxusd@gmail.com',
         subject: 'Restablecer la contraseña',
-        text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó resetear la contraseña'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/resetpw' + token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
+        text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó resetear la contraseña'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/resetpw/' + token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
       };
 
       smtpTransport.sendMail(mailoptions, function(err) {
@@ -192,17 +192,71 @@ router.post('/users/confirm_email', (req, res) => {
     if(err) return next(err);
 
 
-    res.render('users/confirm_email');
+    res.redirect('/users/confirm_email');
     
   })
 });
 
-router.get('/users/resetpw', (req, res) => {
-  res.render('users/resetpw');
+router.get('/users/resetpw/:token', function(req, res) {
+  User.findOne({ resetpwToken: req.params.token, resetpwExpires: { $gt: Date.now() } }, function(err, user) {
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/users/confirm_email');
+    }
+    res.render('users/resetpw', {token: req.params.token});
+  });
 });
 
-router.post('/users/resetpw', (req, res) => {
-  res.render('users/resetpw');
+
+
+
+router.post('/users/resetpw/:token', async(req, res) =>{
+  asyncs.waterfall([
+    function(done) {
+      User.findOne({ resetpwToken: req.params.token, resetpwExpires: { $gt: Date.now() } }, function(err, user) {
+        if (!user) {
+          req.flash('error', 'El token es invalido o expiro.');
+          return res.redirect('back');
+        }
+        if(req.body.password === req.body.confirm) {
+          user.setPassword(req.body.password, function(err) {
+            user.resetpwToken = undefined;
+            user.resetpwExpires = undefined;
+
+            user.save();
+            done(err,user);
+          })
+        } else {
+            req.flash("error", "Contraseña no coincide.");
+            return res.redirect('back');
+        }
+      });
+    },
+    function(user, done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail', 
+        auth: {
+          user: 'megalaxusd@gmail.com',
+          pass: process.env.GMAILPW
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'megalaxusd@gmail.com',
+        subject: 'Tu contraseña ha sido cambiado',
+        text: 'Hola,\n\n' +
+          'Esto es una confirmación de que la contraseña de ' + user.email + ' ha sido cambiado.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        console.log('contraseña cambiada');
+
+        req.flash('success_msg', 'Listo! Tu contraseña ha sido cambiada.');
+        done(err);
+      });
+    }
+  ], function(err) {
+    res.redirect('/users/signin');
+  });
 });
 
 
