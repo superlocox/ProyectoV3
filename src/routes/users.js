@@ -2,6 +2,9 @@ const router = require('express').Router();
 const passport = require('passport');
 const Cart = require("../models/Carrito");
 const Pedido = require('../models/Pedido');
+const asyncs = require("async");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 // Models
 const User = require('../models/User');
 
@@ -90,7 +93,7 @@ router.post('/users/singup_administrador', async (req, res) => {
     const emailUser = await User.findOne({email: email});
     if(emailUser) {
       req.flash('error_msg', 'Este email esta en uso.');
-      res.redirect('/users/signup');
+      res.redirect('/users/singup_administrador');
     } else {
       // Saving a New User
       
@@ -120,6 +123,86 @@ router.post('/users/signin', passport.authenticate('local', {
     } else{
       res.redirect('/notes')
     }
+});
+
+
+
+
+
+router.get('/users/confirm_email', (req, res) => {
+  res.render('users/confirm_email');
+});
+
+router.post('/users/confirm_email', (req, res) => {
+  asyncs.waterfall([
+    function (done) {
+      crypto.randomBytes(20,function (err,buf) {
+        var token = buf.toString('hex');
+        done(err,token);
+        
+      });
+      
+    },
+    function (token,done) {
+      User.findOne({email: req.body.email},function (err,user) {
+        if(!user){
+          req.flash('error','No existe una cuenta con este email');
+          return res.redirect('users/confirm_email');
+
+        }
+        user.resetpwToken = token;
+        user.resetpwExpires= Date.now()+ 3600000; //Una hora
+
+        user.save(function (err) {
+          done(err,token,user);
+          
+        });
+        
+      });
+      
+    },
+    function (token,user,done) {
+      var smtpTransport = nodemailer.createTransport({
+        service: 'Gmail',
+        auth:{
+          user:'megalaxusd@gmail.com',
+          pass: process.env.GMAILPW
+        }
+      });
+      var mailoptions={
+        to: user.email,
+        from: 'megalaxusd@gmail.com',
+        subject: 'Restablecer la contraseña',
+        text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó resetear la contraseña'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/resetpw' + token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
+      };
+
+      smtpTransport.sendMail(mailoptions, function(err) {
+
+        console.log('mail sent');
+      
+        req.flash('success_msg', 'El correo fue enviado a '+ user.email+ ' con instrucciones para completar este proceso');
+        done(err, 'done');
+
+        
+      });
+      
+    }
+    
+  ],function(err) {
+    if(err) return next(err);
+
+
+    res.render('users/confirm_email');
+    
+  })
+});
+
+router.get('/users/resetpw', (req, res) => {
+  res.render('users/resetpw');
+});
+
+router.post('/users/resetpw', (req, res) => {
+  res.render('users/resetpw');
 });
 
 
