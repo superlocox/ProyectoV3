@@ -7,6 +7,8 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 // Models
 const User = require('../models/User');
+//const pw = process.env.GMAILPW;
+const pw = '!david123';
 
 router.get('/users/signup', (req, res) => {
   res.render('users/signup');
@@ -166,7 +168,7 @@ router.post('/users/confirm_email', async(req, res) => {
         service: 'Gmail',
         auth:{
           user:'megalaxusd@gmail.com',
-          pass: process.env.GMAILPW
+          pass: pw
         }
       });
       var mailoptions={
@@ -237,7 +239,7 @@ router.post('/users/resetpw/:token', async(req, res) =>{
         service: 'Gmail', 
         auth: {
           user: 'megalaxusd@gmail.com',
-          pass: process.env.GMAILPW
+          pass: pw
         }
       });
       var mailOptions = {
