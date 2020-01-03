@@ -6,7 +6,8 @@ var PedidoSchema = new Schema({
     cart: {type: Object, required:true},
   //  id_pago: {type: String, required: true},
     activo: {type: Boolean, required: true},
-    estado: {type: String, required: true}
+    estado: {type: String, required: true},
+    pago:{type: String, required:true}
 
 });
 

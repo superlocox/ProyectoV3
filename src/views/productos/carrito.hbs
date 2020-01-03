@@ -1,59 +1,63 @@
-
-
-
 {{#if products}}
 
 <div class="container-fluid">
-<div class="row">
-   <div class="col-xs-12">
-       <ul class="list-group">
+    <div class="row">
+        <div class="col-xs-12">
+            <form action="/pedido" method="POST">
+                <ul class="list-group">
 
-           <table border="1px" cellpadding="5px" width="100%"  class="table-light table-bordered" >
-    <thead>
-         <tr>
-        <th>Nombre del artículo</th>
-        <th class="text-center">Precio del artículo</th>
-        <th class="text-center">Cantidad del artículo </th>
-        <th class="text-center">Accion</th>
-        </tr>
-    </thead>
-    <tbody>
-           {{#each products}}
-            <tr>
-               <td><strong>{{this.item.nombre_producto}}</strong></td>
-              <td class="text-center"> <span class="label label-success">${{this.item.precio}}</span></td>
-               <td class="text-center"> <span class="badge">{{this.cantidad}}</span></td>
-              <td class="text-center"> <div class="btn-group">
-                   <buttton class="btn primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Action<span class="caret"></span> </buttton>
-                   <ul class="dropdown-menu">
-                       <li><a href="#">Reducir por 1</a> </li>
-                       <li><a href="#">Remover todo</a> </li>
-                   </ul>
-               </div></td>
-              
-
-            </tr>
-           {{/each}}
-          
-
-       </ul>
-
-   </div>
-</div>
+                    <table border="1px" cellpadding="5px" width="100%" class="table-light table-bordered">
+                        <thead>
+                            <tr>
+                                <th colspan="9" class="text-center">MI CARRITO DE COMPRAS</th>
+                            </tr>
+                            <tr>
+                                <th>Nombre del artículo</th>
+                                <th class="text-center">Precio del artículo</th>
+                                <th class="text-center">Cantidad del artículo </th>
+                                <!-- <th class="text-center">Accion</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each products}}
+                            <tr>
+                                <td><strong>{{this.item.nombre_producto}}</strong></td>
+                                <td class="text-center"> <span class="label label-success">${{this.item.precio}}</span>
+                                </td>
+                                <td class="text-center"> <span class="badge">{{this.cantidad}}</span></td>
+                                {{!-- <td class="text-center">
+                <div class="btn-group">
+                    <buttton class="btn primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Action<span
+                            class="caret"></span> </buttton>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Reducir por 1</a> </li>
+                        <li><a href="#">Remover todo</a> </li>
+                    </ul>
+                </div>
+            </td> --}}
 
 
-<thead class="card-header" display="off">
-    <tr>
-        <th colspan="9">MI CARRITO DE COMPRAS</th>
-    </tr>
-    <tr>
-        <th colspan="1"><strong>Precio total: {{session.cart.precioTotal}}</strong></th>
-        <th colspan="2"><strong>Cantidad total de artículos: {{session.cart.cantTotal}}</strong></th>
+                            </tr>
+                            {{/each}}
 
-       
-     
-        <th colspan="3">
-             <form action="" method="POST">
+
+                </ul>
+
+            </form>
+        </div>
+    </div>
+
+
+    <thead class="card-header" display="off">
+
+        <tr>
+            <th colspan="1"><strong>Precio total: {{session.cart.precioTotal}}</strong></th>
+            <th colspan="2"><strong>Cantidad total de artículos: {{session.cart.cantTotal}}</strong></th>
+
+
+
+            <th colspan="3">
+                {{!-- <form action="" method="POST">
         <script
           src="https://checkout.stripe.com/checkout.js" class="stripe-button"
           data-key="pk_test_DIqxs6VcLevk5Ph42BpNB16r00aFLppe01"
@@ -65,33 +69,44 @@
           data-locale="auto">
         </script>
         <script>
-          // Hide default stripe button
-          document.getElementsByClassName('stripe-button-el')[0].style.display = 'none';
+            // Hide default stripe button
+            document.getElementsByClassName('stripe-button-el')[0].style.display = 'none';
 
-          </script>
+        </script>
 
          <button class="btn btn-dark btn-block">
              Pagar con tarjeta
          </button>
       
-      </form>
-            <a href="/pedido" type="button" class="btn btn-success" >Checkout</a>
-        </th>
-       
-    </tr>
-</thead>
+      </form> --}}
+                <div class="form-group">
+                    <select class="selectpicker" name="pago" id="pago">
+
+                        <option>Efectivo</option>
+                        <option>Tarjeta</option>
+
+                    </select>
+                </div>
+
+                <button class="btn btn-dark btn-block">
+                    Hacer pedido
+                </button>
+
+
+            </th>
+
+        </tr>
+    </thead>
 
 
 
     {{else}}
 
     <div class="row">
-   <div class="col-ss-6 col-md-6 col-md-offset-3 col-sm-offset-3">
-        <h2>No articulos agregados</h2>
-          </div>
-</div>
+        <div class="col-ss-6 col-md-6 col-md-offset-3 col-sm-offset-3">
+            <h2>No articulos agregados</h2>
+        </div>
+    </div>
 </div>
 
 {{/if}}
-
-

@@ -166,13 +166,14 @@ router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
 })
 
 
-router.get('/pedido',isLogIn, async(req,res)=>{
+router.post('/pedido',isLogIn, async(req,res)=>{
 
     const pedido = new Pedido({
         user: req.user,
         cart: req.session.cart,
         activo: true,
-        estado: "En cola"
+        estado: "En cola",
+        pago: req.body.pago
 
     });
 
