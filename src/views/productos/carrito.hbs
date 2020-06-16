@@ -3,7 +3,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-12">
-            <form action="/pedido" method="POST">
+            <form action="/pedido" method="POST"  > 
                 <ul class="list-group">
 
                     <table border="1px" cellpadding="5px" width="100%" class="table-light table-bordered">
@@ -57,15 +57,18 @@
 
 
             <th colspan="3">
-                {{!-- <form action="" method="POST">
+
+                
+                <form action="charge" method="POST">
         <script
+            
           src="https://checkout.stripe.com/checkout.js" class="stripe-button"
           data-key="pk_test_DIqxs6VcLevk5Ph42BpNB16r00aFLppe01"
-          data-amount="{{session.cart.precioTotal}}"
+          data-amount={{session.cart.precioTotal}}
+        
           data-name="Pago En linea"
           data-description="Desarrollo web para pago"
-          
-          
+          data-email="{{user.email}}"
           data-locale="auto">
         </script>
         <script>
@@ -78,7 +81,9 @@
              Pagar con tarjeta
          </button>
       
-      </form> --}}
+      </form>
+
+
                 <div class="form-group">
                     <select class="selectpicker" name="pago" id="pago">
 

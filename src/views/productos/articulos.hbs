@@ -1,0 +1,30 @@
+<div class="table-responsive">
+<table border="1px" cellpadding="5px" width="100%"  class="table-light table-bordered">
+    <thead>
+         <tr>
+        <th>Nombre del producto</th>
+        <th>Foto</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Accion</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        {{#each productos}}
+   <tr>
+        <td>{{nombre_producto}}</td>
+    <td><img src="{{imgPath}}" class="card-img" alt="{{filename}}" ></td>
+    <td class="text-center">${{precio}}</td>
+    <td class="text-center">{{cantidad}}</td>
+
+  
+ 
+   </tr>
+
+            {{/each}}
+    </tbody>
+   
+</table>
+</div>
+  

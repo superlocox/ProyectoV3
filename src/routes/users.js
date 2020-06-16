@@ -10,6 +10,76 @@ const User = require('../models/User');
 //const pw = process.env.GMAILPW;
 const pw = '!david123';
 
+//para app movil
+const jwt = require('jsonwebtoken')
+const config = require('../config')
+
+router.post('/singup_api', async(req, res)=>{
+
+  try{
+    const { name, apellido, celular ,email, password, confirm_password} = req.body;
+
+    const emailUser = await User.findOne({email: email});
+    if(emailUser){
+      return res.status(401).send({auth:false, token:null});
+    }
+    else{
+
+      mensajero = false;
+      admin = false;
+
+      const user = new User({name, apellido, celular, email, password, admin,mensajero});
+    
+
+    user.password = await user.encryptPassword(password);
+    await user.save();
+
+    const token = jwt.sign({id: user.id},config.secreto,{
+      expiresIn: '24h'
+    });
+    res.status(200).json({auth:true, token});
+
+    }
+
+  } catch (e){
+    console.log(e)
+    res.status(500).send('There was a problem signup');
+  }
+
+})
+
+router.post('/sigin_api', async(req,res)=>{
+  try{
+    const user = await User.findOne({email: req.body.email})
+    if(!user){
+      return res.status(400).send('Email no existe')
+    }
+    const validPaswword = await (req.body.password, user.password)
+    if(!validPaswword){
+      return res.status(401).send({auth:false, token:null});
+    }
+    const token= jwt.sign({ id:user.id},config.secreto,{
+      expiresIn: '24h'
+    });
+    res.status(200).json({auth:true,token});
+
+
+  } catch(e){
+    console.log(e)
+    res.status(500).send('There was a problem signin');
+  }
+})
+
+router.get('/logout_api',function(req,res){
+  res.status(200).send({auth:false,token:null});
+})
+
+
+router.get('/users/singup_api', async (req,res)=>{
+  const users = await User.find();
+  res.json({users});
+}) 
+
 router.get('/users/signup', (req, res) => {
   res.render('users/signup');
 });
@@ -54,6 +124,12 @@ router.post('/users/signup', async (req, res) => {
       const newUser = new User({name, apellido, celular, email, password, admin,mensajero});
       newUser.password = await newUser.encryptPassword(password);
       await newUser.save();
+
+      const token = jwt.sign({id: newUser.id},config.secreto,{
+        expiresIn: '24h'
+      });
+     
+
       req.flash('success_msg', 'Estas registrado.');
       res.redirect('/users/signin');
     }
@@ -102,6 +178,13 @@ router.post('/users/singup_administrador', async (req, res) => {
       const newUser = new User({name, apellido, celular, email, password, jerarquia, admin, mensajero});
       newUser.password = await newUser.encryptPassword(password);
       await newUser.save();
+
+      const token = jwt.sign({id: newUser.id},config.secreto,{
+        expiresIn: '24h'
+      });
+      res.status(200).json({auth:true, token});
+
+
       req.flash('success_msg', 'Estas registrado.');
       res.redirect('/notes');
     }

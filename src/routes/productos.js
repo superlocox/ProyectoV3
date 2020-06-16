@@ -22,7 +22,11 @@ const stripe = require('stripe')('sk_test_Y20a1WyCOc9YxyjZyT1ppq4l008RKslg6a');
 const Productos = require('../models/Productos');
 const Cart = require("../models/Carrito");
 
+router.get('/api/productos', async (req, res)=>{
+    const productos = await Productos.find();
+    res.json({productos});
 
+})
 
 
 router.get('/productos/add_product', (req, res) => {
@@ -33,6 +37,12 @@ router.get('/productos/show',async(req,res)=>{
     const productos = await Productos.find();
     //console.log(productos);
     res.render('productos/show',{productos});
+})
+
+router.get('/productos/articulos',async(req,res)=>{
+    const productos = await Productos.find();
+    //console.log(productos);
+    res.render('productos/articulos',{productos});
 })
 
 router.post('/productos/add_product', async (req, res) => {
@@ -181,7 +191,7 @@ router.post('/pedido',isLogIn, async(req,res)=>{
      
         req.flash('success','Pedido realizado');
         req.session.cart=null;
-        res.redirect('/');
+        res.redirect('/users/mis_pedidos');
     })
 
 
