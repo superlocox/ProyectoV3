@@ -39,6 +39,12 @@ router.get('/productos/show',async(req,res)=>{
     res.render('productos/show',{productos});
 })
 
+router.get('/productos/lista_productos',async(req,res)=>{
+    const productos = await Productos.find();
+    //console.log(productos);
+    res.render('productos/lista_productos',{productos});
+})
+
 router.get('/productos/articulos',async(req,res)=>{
     const productos = await Productos.find();
     //console.log(productos);
@@ -48,6 +54,10 @@ router.get('/productos/articulos',async(req,res)=>{
 router.post('/productos/add_product', async (req, res) => {
     let errors = [];
     const { imgPath, nombre_producto, descripcion_producto, precio, cantidad } = req.body;
+
+    //if(imgPath =="null"){
+     //   errors.push({ text: 'Por favor ingrese una imagen.' });
+    //}
 
     if (nombre_producto.length <= 0) {
         errors.push({ text: 'Por favor ingrese un nombre.' });
@@ -134,7 +144,7 @@ router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
       cart.add(product, product.id);
       req.session.cart = cart;
       console.log(req.session);
-      res.redirect('/productos/show');
+      res.redirect('/productos/lista_productos');
   
     })
   });

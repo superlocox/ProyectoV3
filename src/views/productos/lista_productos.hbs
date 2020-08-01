@@ -1,0 +1,36 @@
+
+
+
+<style>
+    .row{
+        margin: auto;
+        padding: auto;
+    }
+</style>
+
+    <div class="small-container">
+    <h2>Lista de productos</h2>
+    <div class="row">
+         {{#each productos}}
+
+         <div class="col-3">
+            
+                 <img src="{{imgPath}}" class="card-img" alt="{{filename}}" >
+            
+             <h4>{{nombre_producto}}</h4>
+             <p>Cantidad: {{cantidad}}</p>
+             <p>RD${{precio}}</p>
+             <a href="/productos/show/add-to-cart/{{id}}"><button  class="btn btn-success ">Agregar al Carrito</button></a>
+
+         </div>
+         
+
+
+         {{/each}}
+    </div>
+   
+
+</div>
+
+
+

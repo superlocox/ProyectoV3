@@ -61,11 +61,15 @@
                 
                 <form action="charge" method="POST">
         <script
-            
+
+         
+          
           src="https://checkout.stripe.com/checkout.js" class="stripe-button"
           data-key="pk_test_DIqxs6VcLevk5Ph42BpNB16r00aFLppe01"
-          data-amount={{session.cart.precioTotal}}
         
+          data-amount={{session.cart.precioTotal}};
+          data-currency="DOP";
+
           data-name="Pago En linea"
           data-description="Desarrollo web para pago"
           data-email="{{user.email}}"

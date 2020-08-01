@@ -1,7 +1,18 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   background: #8bb5a6;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #00ff99, #1488CC);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #00ff99, #1488CC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+nav ul {
+  list-style-type: none;
+
 }
 
 .logo {
@@ -126,4 +137,47 @@ ol, ul {
 }
 .cards li:last-child {
   margin-right: 0;
+}
+
+.small-container{
+  margin: auto;
+  padding-left: 25px;
+  padding-right: 25px;
+  background-color: white;
+  
+ 
+}
+
+.col-3{
+  
+  padding: 10px;
+  min-width: 220px;
+  margin-bottom: 50px;
+  background-color: white;
+  
+  text-align: center;
+  
+  
+}
+
+h4{
+
+  white-space: nowrap;
+  font-size: medium;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+}
+
+h4:hover{
+  white-space: normal;
+  overflow: normal;
+  text-overflow: initial;
+}
+
+
+
+img{
+  display: block;
+  margin: 0 auto ;
 }
