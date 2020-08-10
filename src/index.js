@@ -13,6 +13,8 @@ const mongoose = require('mongoose');
 const keyPublishable = process.env.STRIPE_PUBLIC_KEY;
 const keySecret = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(keySecret);
+require('dotenv/config')
+
 
 
 // const mongoClient = require('mongodb').MongoClient

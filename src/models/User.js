@@ -6,13 +6,14 @@ const bcrypt = require('bcryptjs');
 const UserSchema = new Schema({
   name: { type: String, required: true },
   apellido: { type: String, required: true },
-  celular: { type: Number,  unique: true, required: true },
-  email: { type: String,  unique: true, required: true },
+  celular: { type: Number,   required: true },
+  email: { type: String,   required: true },
   password: { type: String, required: true },
   admin:{type:Boolean,required:true},
   resetpwToken: String,
   resetpwExpires: Date,
   mensajero:{type:Boolean,required:true},
+  //verificado: {type:Boolean,require:true},
   date: { type: Date, default: Date.now }
 });
 
