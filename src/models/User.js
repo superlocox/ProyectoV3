@@ -13,7 +13,8 @@ const UserSchema = new Schema({
   resetpwToken: String,
   resetpwExpires: Date,
   mensajero:{type:Boolean,required:true},
-  //verificado: {type:Boolean,require:true},
+  verificado: {type:Boolean,require:true},
+  email_token:{type: String},
   date: { type: Date, default: Date.now }
 });
 

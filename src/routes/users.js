@@ -28,14 +28,34 @@ router.post('/singup_api', async (req, res) => {
     }
     else {
 
+   
+
+
       mensajero = false;
       admin = false;
+      verificado = false;
+      email_token = crypto.randomBytes(64).toString('hex');
+      const user = new User({ name, apellido, celular, email, password, admin, mensajero, verificado, email_token });
 
-      const user = new User({ name, apellido, celular, email, password, admin, mensajero });
 
 
       user.password = await user.encryptPassword(password);
-      await user.save();
+      await user.save().then((result)=>{
+        const msg={
+          from: 'superlocox@hotmail.es',
+          to: user.email,
+          subject: 'SADE - Verificación de cuenta',
+          text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó crear una cuenta en nuestro sitio web.'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/verify/' + email_token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
+        }
+         sgMail.send(msg).then(() => {
+          console.log('Message sent')
+          
+          
+      }).catch((error) => {
+          console.log(error.response.body)
+          // console.log(error.response.body.errors[0].message)
+      })
+      })
 
       const token = jwt.sign({ id: user.id }, config.secreto, {
         expiresIn: '24h'
@@ -131,17 +151,37 @@ router.post('/users/signup', async (req, res) => {
     // Saving a New User
     mensajero = false;
     admin = false;
-    const newUser = new User({ name, apellido, celular, email, password, admin, mensajero });
+    verificado = false;
+    email_token = crypto.randomBytes(64).toString('hex');
+    const newUser = new User({ name, apellido, celular, email, password, admin, mensajero, verificado, email_token });
     newUser.password = await newUser.encryptPassword(password);
     await newUser.save();
+
+    newUser.password = await newUser.encryptPassword(password);
+    await newUser.save().then((result)=>{
+      const msg={
+        from: 'superlocox@hotmail.es',
+        to: newUser.email,
+        subject: 'SADE - Verificación de cuenta',
+        text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó crear una cuenta en nuestro sitio web.'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/verify/' + email_token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
+      }
+       sgMail.send(msg).then(() => {
+        console.log('Message sent')
+        req.flash('success_msg', 'El correo fue enviado a '+ newUser.email+ ' con instrucciones para completar este proceso');
+        res.redirect('/users/signin');
+        
+    }).catch((error) => {
+        console.log(error.response.body)
+        // console.log(error.response.body.errors[0].message)
+    })
+    })
 
     const token = jwt.sign({ id: newUser.id }, config.secreto, {
       expiresIn: '24h'
     });
 
 
-    req.flash('success_msg', 'Estas registrado.');
-    res.redirect('/users/signin');
+
 
   }
 });
@@ -194,18 +234,57 @@ router.post('/users/singup_administrador', async (req, res) => {
 
     // Saving a New User
 
-    const newUser = new User({ name, apellido, celular, email, password, jerarquia, admin, mensajero });
+    verificado = true;
+
+    const newUser = new User({ name, apellido, celular, email, password, jerarquia, admin, mensajero,verificado });
     newUser.password = await newUser.encryptPassword(password);
-    await newUser.save();
+      await newUser.save();
+
+      const token = jwt.sign({id: newUser.id},config.secreto,{
+        expiresIn: '24h'
+      });
+      //res.status(200).json({auth:true, token});
+
+
+      req.flash('success_msg', 'Cuenta registrada.');
+      res.redirect('/users/singup_administrador');
+
+    
 
 
 
-
-    req.flash('success_msg', 'Estas registrado.');
-    res.redirect('/notes');
 
   }
 });
+
+router.get('/users/verify/:token', async(req,res,next)=>{
+  try{
+    const user = await User.findOne({email_token: req.query.token});
+    if(!user){
+      req.flash('error','El token es inválido, favor contactarnos.');
+      return res.redirect('/');
+    }
+
+    user.email_token = null;
+    user.verificado = true;
+    await user.save();
+    await req.login(user, async(err)=>{
+      if(err) return next(err);
+      req.flash('success_msg','Cuenta verificada, ahora puedes iniciar sesión ');
+      //const redirectUrl = req.session.redirectUrl || '/';
+      //delete req.session.redirectUrl;
+      res.redirect('/users/signin');
+    });
+  }catch (error){
+    console.log(error);
+    req.flash('error','Algo salió mal');
+    res.redirect('/');
+  }
+ 
+
+});
+
+
 
 router.get('/users/signin', (req, res) => {
   res.render('users/signin');
@@ -389,64 +468,109 @@ router.post('/users/confirm_email',  (req, res) => {
 router.get('/users/resetpw/:token', function (req, res) {
   User.findOne({ resetpwToken: req.params.token, resetpwExpires: { $gt: Date.now() } }, function (err, user) {
     if (!user) {
-      req.flash('error', 'Password reset token is invalid or has expired.');
+      req.flash('error', 'Ha expirado el reseteo de clave.');
       return res.redirect('/users/confirm_email');
     }
     res.render('users/resetpw', { token: req.params.token });
   });
 });
 
-
-
-
 router.post('/users/resetpw/:token', async (req, res) => {
-  asyncs.waterfall([
-    function (done) {
-      User.findOne({ resetpwToken: req.params.token, resetpwExpires: { $gt: Date.now() } }, function (err, user) {
-        if (!user) {
-          req.flash('error', 'El token es invalido o expiro.');
-          return res.redirect('back');
-        }
-        if (req.body.password === req.body.confirm) {
-          user.setPassword(req.body.password, function (err) {
-            user.resetpwToken = undefined;
-            user.resetpwExpires = undefined;
 
-            user.save();
-            done(err, user);
-          })
-        } else {
-          req.flash("error", "Contraseña no coincide.");
-          return res.redirect('back');
-        }
-      });
-    },
-    function (user, done) {
-      var smtpTransport = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-          user: 'megalaxusd@gmail.com',
-          pass: pw
-        }
-      });
-      var mailOptions = {
-        to: user.email,
-        from: 'megalaxusd@gmail.com',
-        subject: 'Tu contraseña ha sido cambiado',
-        text: 'Hola,\n\n' +
-          'Esto es una confirmación de que la contraseña de ' + user.email + ' ha sido cambiado.\n'
-      };
-      smtpTransport.sendMail(mailOptions, function (err) {
-        console.log('contraseña cambiada');
-
-        req.flash('success_msg', 'Listo! Tu contraseña ha sido cambiada.');
-        done(err);
-      });
+      
+  User.findOne({ resetpwToken: req.params.token, resetpwExpires: { $gt: Date.now() } })
+  .then(user=>{
+    if (!user) {
+      req.flash('error', 'El token es invalido o expiro.');
+      return res.redirect('back');
     }
-  ], function (err) {
-    res.redirect('/users/signin');
-  });
+    if (req.body.password === req.body.confirm) {
+      user.setPassword(req.body.password, function (err) {
+        user.resetpwToken = undefined;
+        user.resetpwExpires = undefined;
+
+        user.save().then((result)=>{
+
+          const msg={
+            from: 'superlocox@hotmail.es',
+            to: user.email,
+            subject: 'Tu contraseña ha sido cambiado',
+            text: 'Hola,\n\n' +
+            'Esto es una confirmación de que la contraseña de ' + user.email + ' ha sido cambiado.\n'
+          }
+           sgMail.send(msg).then(() => {
+            console.log('Message sent')
+            req.flash('success_msg', 'Listo! Tu contraseña ha sido cambiada.');
+            res.redirect('/users/signin');
+            
+        }).catch((error) => {
+            console.log(error.response.body)
+            // console.log(error.response.body.errors[0].message)
+        })
+
+        })
+       
+      })
+    }else {
+      req.flash("error", "Contraseña no coincide.");
+      return res.redirect('back');
+    }
+
+
+  })
+
+
 });
+
+
+// router.post('/users/resetpw/:token', async (req, res) => {
+//   asyncs.waterfall([
+//     function (done) {
+//       User.findOne({ resetpwToken: req.params.token, resetpwExpires: { $gt: Date.now() } }, function (err, user) {
+//         if (!user) {
+//           req.flash('error', 'El token es invalido o expiro.');
+//           return res.redirect('back');
+//         }
+//         if (req.body.password === req.body.confirm) {
+//           user.setPassword(req.body.password, function (err) {
+//             user.resetpwToken = undefined;
+//             user.resetpwExpires = undefined;
+
+//             user.save();
+//             done(err, user);
+//           })
+//         } else {
+//           req.flash("error", "Contraseña no coincide.");
+//           return res.redirect('back');
+//         }
+//       });
+//     },
+//     function (user, done) {
+//       var smtpTransport = nodemailer.createTransport({
+//         service: 'Gmail',
+//         auth: {
+//           user: 'megalaxusd@gmail.com',
+//           pass: pw
+//         }
+//       });
+//       var mailOptions = {
+//         to: user.email,
+//         from: 'megalaxusd@gmail.com',
+//         subject: 'Tu contraseña ha sido cambiado',
+//         text: 'Hola,\n\n' +
+//           'Esto es una confirmación de que la contraseña de ' + user.email + ' ha sido cambiado.\n'
+//       };
+//       smtpTransport.sendMail(mailOptions, function (err) {
+//         console.log('contraseña cambiada');
+
+//         req.flash('success_msg', 'Listo! Tu contraseña ha sido cambiada.');
+//         done(err);
+//       });
+//     }
+//   ], function (err) {
+//     res.redirect('/users/signin');
+//   });
+// });
 
 
 
