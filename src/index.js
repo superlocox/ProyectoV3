@@ -14,7 +14,7 @@ const mongoose = require('mongoose');
 const keyPublishable = process.env.STRIPE_PUBLIC_KEY;
 const keySecret = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(keySecret);
-require('dotenv/config')
+// require('dotenv/config')
 
 // var fs = require('fs');
 // url = require('url');
@@ -95,40 +95,40 @@ const http = require('http');
 
 
 
-const socketio = require('socket.io');
+// const socketio = require('socket.io');
 // Inicializacion
 const app = express();
 
 
-const server = http.createServer(app);
+// const server = http.createServer(app);
 require('./database');
 require('./config/passport');
 
-const users = {}
+// const users = {}
 
-const io = socketio(server)
+// const io = socketio(server)
 
-io.on('connection',socket=>{
-  console.log('Nueva conexion');
+// io.on('connection',socket=>{
+//   console.log('Nueva conexion');
 
-  socket.on('new-user',name =>{
-    users[socket.id]= name
-    socket.broadcast.emit('user-connected',name)
-  })
+//   socket.on('new-user',name =>{
+//     users[socket.id]= name
+//     socket.broadcast.emit('user-connected',name)
+//   })
 
 
-  socket.on('send-chat-message', message=>{
+//   socket.on('send-chat-message', message=>{
    
-    socket.broadcast.emit('chat-message', {message:message,name:users[socket.id]});
+//     socket.broadcast.emit('chat-message', {message:message,name:users[socket.id]});
     
-  });
+//   });
 
-  socket.on('disconnect',()=>{
-    socket.broadcast.emit('user-disconnected', users[socket.id])
-    delete users[socket.id]
-  })
+//   socket.on('disconnect',()=>{
+//     socket.broadcast.emit('user-disconnected', users[socket.id])
+//     delete users[socket.id]
+//   })
 
-})
+// })
 
 
 
