@@ -8,9 +8,9 @@ const { isAuthenticated } = require('../helpers/auth');
 const readline = require('readline');
 
 
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config()
-  }
+// if (process.env.NODE_ENV !== 'production') {
+//     require('dotenv').config()
+//   }
   
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripePublicKey = process.env.STRIPE_PUBLIC_KEY;
