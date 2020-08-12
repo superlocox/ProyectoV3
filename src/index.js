@@ -223,7 +223,7 @@ app.use(require('./routes/productos'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Servidor escuchando
-server.listen(app.get('port'), () => {
+app.listen(app.get('port'), () => {
   console.log('Server on port', app.get('port'));
 });
 

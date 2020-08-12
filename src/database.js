@@ -4,7 +4,6 @@ mongoose.set('useFindAndModify', false);
 
 
 
-
 mongoose.connect('mongodb+srv://navidarito:!david123@cluster0-46pmk.gcp.mongodb.net/test?retryWrites=true&w=majority', {
   useCreateIndex: true,
   useNewUrlParser: true,
