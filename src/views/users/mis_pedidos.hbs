@@ -21,6 +21,7 @@
                 <th colspan="9" class="text-center">Forma de pago: {{pago}} </th>
               </tr>
               <tr>
+                <th class="text-center">Imagen</th>
                 <th>Nombre del artículo</th>
                 <th class="text-center">Precio del artículo</th>
                 <th class="text-center">Cantidad del artículo </th>
@@ -32,10 +33,10 @@
             {{#each this.items}}
             <tbody>
               <tr>
-
+                <td><img src="{{this.item.imgPath}}" class="card-img" alt="{{filename}}" ></td>
                 <td> {{this.item.nombre_producto}} </td>
                 <td class="text-center"> <span class="badge">
-                    {{this.item.precio}}
+                    RD$ {{this.item.precio}}
                   </span></td>
                 <td class="text-center">{{this.cantidad}}</td>
 

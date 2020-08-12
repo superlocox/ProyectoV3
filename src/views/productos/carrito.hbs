@@ -1,4 +1,4 @@
-{{#if products}}
+{{#if product}}
 
 <div class="container-fluid">
     <div class="row">
@@ -12,19 +12,34 @@
                                 <th colspan="9" class="text-center">MI CARRITO DE COMPRAS</th>
                             </tr>
                             <tr>
+                                <th>Imagen</th>
                                 <th>Nombre del artículo</th>
                                 <th class="text-center">Precio del artículo</th>
                                 <th class="text-center">Cantidad del artículo </th>
-                                <!-- <th class="text-center">Accion</th> -->
+                                {{!-- <th class="text-center">Accion</th> --}}
                             </tr>
                         </thead>
                         <tbody>
-                            {{#each products}}
+                            {{#each product}}
                             <tr>
+                                <td><img src="{{this.item.imgPath}}" class="card-img" alt="{{filename}}" ></td>
                                 <td><strong>{{this.item.nombre_producto}}</strong></td>
                                 <td class="text-center"> <span class="label label-success">${{this.item.precio}}</span>
                                 </td>
                                 <td class="text-center"> <span class="badge">{{this.cantidad}}</span></td>
+
+
+
+                                {{!-- <td align="center">
+                                    <li >
+                                        <a href="/productos/show/reduce/:{{this.item._id}}"><button type="button" class="btn btn-icon btn-danger " id="btnMinus"><i data-feather="minus"></i>-</button> </a> 
+                                        
+                                        <a href="#"><button type="button" class="btn btn-icon btn-success " d="btnPlus"><i data-feather="plus"></i>+</button></a> --}}
+                                       {{!-- <input type="number" class="form-control" value="1" min="1" max="{{math this.item.cantidad "-" this.cantidad}}" id="numberCol"> --}}
+                                        
+                                     
+                                    {{!-- </li>
+                                </td> --}}
                                 {{!-- <td class="text-center">
                 <div class="btn-group">
                     <buttton class="btn primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">Action<span
@@ -59,7 +74,7 @@
             <th colspan="3">
 
                 
-                <form action="charge" method="POST">
+                <form action="/charge" method="POST">
         <script
 
          
@@ -67,12 +82,13 @@
           src="https://checkout.stripe.com/checkout.js" class="stripe-button"
           data-key="pk_test_DIqxs6VcLevk5Ph42BpNB16r00aFLppe01"
         
-          data-amount={{session.cart.precioTotal}};
+          data-amount={{math session.cart.precioTotal "*" 100}}
           data-currency="DOP";
 
           data-name="Pago En linea"
           data-description="Desarrollo web para pago"
           data-email="{{user.email}}"
+          data-allow-remember-me= "false"
           data-locale="auto">
         </script>
         <script>
@@ -81,15 +97,13 @@
 
         </script>
 
-         <button class="btn btn-dark btn-block">
-             Pagar con tarjeta
-         </button>
+       
       
       </form>
 
 
                 <div class="form-group">
-                    <select class="selectpicker" name="pago" id="pago">
+                    <select class="selectpicker text-center" name="pago" id="pago">
 
                         <option>Efectivo</option>
                         <option>Tarjeta</option>

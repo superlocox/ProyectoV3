@@ -10,11 +10,18 @@ const uuid = require('uuid');
 const MongoStore = require('connect-mongo')(session);
 const mongoose = require('mongoose');
 
+
 const keyPublishable = process.env.STRIPE_PUBLIC_KEY;
 const keySecret = process.env.STRIPE_SECRET_KEY;
 const stripe = require("stripe")(keySecret);
 require('dotenv/config')
 
+// var fs = require('fs');
+// url = require('url');
+const http = require('http');
+
+
+// mime = require('mime')
 
 
 // const mongoClient = require('mongodb').MongoClient
@@ -87,10 +94,42 @@ require('dotenv/config')
 // })
 
 
+
+const socketio = require('socket.io');
 // Inicializacion
 const app = express();
+
+
+const server = http.createServer(app);
 require('./database');
 require('./config/passport');
+
+const users = {}
+
+const io = socketio(server)
+
+io.on('connection',socket=>{
+  console.log('Nueva conexion');
+
+  socket.on('new-user',name =>{
+    users[socket.id]= name
+    socket.broadcast.emit('user-connected',name)
+  })
+
+
+  socket.on('send-chat-message', message=>{
+   
+    socket.broadcast.emit('chat-message', {message:message,name:users[socket.id]});
+    
+  });
+
+  socket.on('disconnect',()=>{
+    socket.broadcast.emit('user-disconnected', users[socket.id])
+    delete users[socket.id]
+  })
+
+})
+
 
 
 
@@ -112,7 +151,17 @@ const hbs = exphbs.create({
           } else {
               return options.inverse(this)
           }
-      }
+      },
+      math: function(lvalue, operator, rvalue) {lvalue = parseFloat(lvalue);
+        rvalue = parseFloat(rvalue);
+        return {
+            "+": lvalue + rvalue,
+            "-": lvalue - rvalue,
+            "*": lvalue * rvalue,
+            "/": lvalue / rvalue,
+            "%": lvalue % rvalue
+        }[operator];
+    }
 
   }
 });
@@ -174,9 +223,10 @@ app.use(require('./routes/productos'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Servidor escuchando
-app.listen(app.get('port'), () => {
+server.listen(app.get('port'), () => {
   console.log('Server on port', app.get('port'));
 });
 
 
 module.exports = app;
+

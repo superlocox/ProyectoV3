@@ -136,7 +136,7 @@ router.get('/productos/show/:id',function(req,res,next){
 router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
     var productId = req.params.id;
     var cart = new Cart(req.session.cart ? req.session.cart : {items:{}});
-  
+    console.log(productId)
     Productos.findById(productId,function(err,product){
       if(err){
         return res.redirect('/');
@@ -149,12 +149,46 @@ router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
     })
   });
 
+  router.get('/productos/show/reduce/:id', async(req,res)=>{
+
+    var productId= req.params.id;
+    var cart= new Cart(req.session.cart ? req.session.cart:{});
+    Productos.findById(productId,function(err,product){
+        if(err){
+            console.log('error')
+            return res.redirect('/');
+            
+        }
+
+        cart.reduceByOne(productId);
+    
+        req.session.cart= cart;
+        console.log(cart);
+        res.redirect('productos/show')
+        res.redirect('/productos/carrito');
+    })
+
+
+
+    // var productId = req.params.id;
+    // console.log(productId)
+    // var cart = new Cart(req.session.cart ? req.session.cart : {});
+    // console.log(cart)
+    // cart.reduceByOne(productId);
+    // req.session.cart = cart;
+    // console.log(req.session.cart);
+    // res.redirect('/productos/carrito');
+    
+   
+
+  })
+
   router.get('/productos/carrito',  async(req,res)=>{
       if(!req.session.cart){
-          return res.render('productos/carrito',{products:null});
+          return res.render('productos/carrito',{product:null});
       }
       var cart =  new Cart(req.session.cart);
-      res.render('productos/carrito',{products:cart.generateArray(),Preciototal: cart.precioTotal} );
+      res.render('productos/carrito',{product:cart.generateArray(),Preciototal: cart.precioTotal} );
   });
 
   router.get('/productos/pago', isLogIn, async(req, res) => {
@@ -193,7 +227,9 @@ router.post('/pedido',isLogIn, async(req,res)=>{
         cart: req.session.cart,
         activo: true,
         estado: "En cola",
-        pago: req.body.pago
+        id_mensajero: 'null',
+        pago: req.body.pago,
+        id_pago:'null'
 
     });
 
@@ -208,9 +244,35 @@ router.post('/pedido',isLogIn, async(req,res)=>{
 
 });
 
+router.get('/pago_stripe',isLogIn, async(req,res)=>{
+    res.redirect('pago_stripe');
+
+});
+
+router.post('/productos/activar_pedido', isLogIn, async(req,res)=>{
+    console.log(req.body.id);
+    const id_pedido = req.body.id;
+    console.log(id_pedido);
+    
+    Pedido.findById(id_pedido).then(pedido=>{
+        pedido.estado = "En progreso";
+        pedido.save();
+        res.redirect('back');
+
+    })
+
+
+
+   
+0
+
+});
+
 
     router.post('/charge', isLogIn, async (req,res)=>{
      
+
+      
 
         const customer = await stripe.customers.create({
             email: req.body.stripeEmail,
@@ -219,27 +281,32 @@ router.post('/pedido',isLogIn, async(req,res)=>{
         })
 
         const charge = await stripe.charges.create({
-            amount: (req.session.cart.precioTotal*100),
+            amount: (req.session.cart.precioTotal)*100,
             currency: 'dop',
             customer: customer.id,
             description: 'prueba pago'
         })
 
         console.log(charge.id);
-        const pedido = new Pedido({
-            user: req.user,
-            cart: req.session.cart,
-            id_pago: charge.id,
-            activo: true
 
-        });
-
-        pedido.save(function(err, result){
-         
-            req.flash('success','Pedido realizado');
+        req.flash('success','Pedido realizado');
             req.session.cart=null;
             res.redirect('/');
-        })
+        
+        // const pedido = new Pedido({
+        //     user: req.user,
+        //     cart: req.session.cart,
+        //     id_pago: charge.id,
+        //     activo: true
+
+        // });
+
+        // pedido.save(function(err, result){
+         
+        //     req.flash('success','Pedido realizado');
+        //     req.session.cart=null;
+        //     res.redirect('/');
+        // })
 
 
         

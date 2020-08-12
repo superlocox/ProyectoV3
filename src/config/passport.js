@@ -4,20 +4,31 @@ const LocalStrategy = require('passport-local').Strategy;
 const mongoose = require('mongoose');
 const User = require('../models/User'); 
 
+
+
 passport.use(new LocalStrategy({
   usernameField: 'email'
-}, async (email, password, done) => {
+}, async (email, password, done, req) => {
+  
   // Match Email's User
   const user = await User.findOne({email: email});
   if (!user) {
+   
     return done(null, false, { message: 'Not User found.' });
   } else {
+    
     // Match Password's User
     const match = await user.matchPassword(password);
+
+    if(!user.verificado){
+      
+      return done(null, false, {message:'Tu cuenta no esta verificada, favor verificarla'})
+    }
     if(match) {
       return done(null, user);
     } else {
-      return done(null, false, { message: 'Incorrect Password.' });
+      
+      return done(null, false, { message: 'Contraseña incorrecta.' });
     }
   }
 

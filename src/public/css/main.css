@@ -181,3 +181,10 @@ img{
   display: block;
   margin: 0 auto ;
 }
+
+#map-template{
+  height: 100%;
+  width: 100%;
+  top: 0;
+  position: absolute;
+}

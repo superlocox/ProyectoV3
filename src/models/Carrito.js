@@ -15,7 +15,18 @@ module.exports = function Cart(CarritoAntiguo){
         this.precioTotal+= itemAlmacenado.item.precio;
 
 
-    }
+    };
+
+    this.reduceByOne = function (id) {
+    
+        console.log('esto es: ')
+        console.log(this.items[id])
+        this.items[id].cantidad--;
+        this.items[id].precio -= this.items[id].item.precio;
+        this.cantTotal--;
+        this.precioTotal -= this.item[id].item.precio;
+        
+    };
 
     this.generateArray = function(){
         var arr= [];
@@ -23,5 +34,5 @@ module.exports = function Cart(CarritoAntiguo){
             arr.push(this.items[id]);
         }
         return arr;
-    }
+    };
 }

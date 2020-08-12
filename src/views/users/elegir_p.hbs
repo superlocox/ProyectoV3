@@ -1,4 +1,177 @@
+<style>
+  .button {
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+    margin: 25px;
+  }
 
+  .button:hover {
+    background-color: #3e8e41
+  }
+
+  .button:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
+</style>
+
+
+
+
+
+<h1>Los pedidos</h1>
+
+
+{{#each users}}
+
+
+
+{{#each ../pedidos}}
+
+
+{{#if_equal ../id user }}
+
+
+
+<div class="row">
+  <div class="col-xs-12 col-md-offset-2">
+
+
+
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form action="/productos/activar_pedido" method="POST"  > 
+        <ul class="list-group">
+
+
+          <table border="1px" cellpadding="5px" width="100%" class="table-light">
+            <h1>Cliente: {{../name}}</h1>
+            
+
+  
+                 <input type="id" class="form-control" name="id" placeholder="id" value="{{id}}" hidden="true">
+         
+            <thead>
+              <tr>
+                <th colspan="9" class="text-center">Estado del pedido: {{this.estado}} </th>
+              </tr>
+              <tr>
+                <th colspan="9" class="text-center">Forma de pago: {{pago}} </th>
+              </tr>
+              <tr>
+                <th class="text-center">Imagen</th>
+                <th class="text-center">Nombre del artículo</th>
+                <th class="text-center">Precio del artículo</th>
+                <th class="text-center">Cantidad del artículo </th>
+
+              </tr>
+            </thead>
+
+            {{#each cart.items}}
+            <tbody>
+              <tr>
+                <td><img src="{{this.item.imgPath}}" class="card-img" alt="{{filename}}" ></td>
+                <td> {{this.item.nombre_producto}} </td>
+                <td class="text-center"> <span class="badge">
+                    {{this.item.precio}}
+                  </span></td>
+                <td class="text-center">{{this.cantidad}}</td>
+
+
+              </tr>
+
+            </tbody>
+
+            {{/each}}
+
+        </ul>
+      </div>
+
+      {{!-- <th>{{estado}}</th> --}}
+      <th colspan="2"><strong> Precio Total : RD${{this.cart.precioTotal}} </strong>
+
+      {{#if_equal estado "En cola" }}
+
+      <button class="btn btn-dark btn-block" >Elegir Pedido</button>
+      
+
+      </form>
+      </th>
+      {{/if_equal}}
+     
+      
+
+        
+
+      {{#if_equal estado "En progreso"}}
+      <a href="/maps/seguimiento" class="btn btn-dark btn-block">
+                    Ver localización
+                </a>
+
+                <h1></h1>
+
+                <form action="/charge" method="POST">
+        <script
+
+         
+          
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="pk_test_DIqxs6VcLevk5Ph42BpNB16r00aFLppe01"
+        
+          data-amount={{math this.cart.precioTotal "*" 100}}
+          data-currency="DOP";
+
+          data-name="Pago En linea"
+          data-description="Desarrollo web para pago"
+          data-email="{{../email}}"
+          data-allow-remember-me= "false"
+        
+          data-locale="auto">
+        </script>
+        <script>
+            // Hide default stripe button
+            document.getElementsByClassName('stripe-button-el')[0].style.display = 'none';
+            //document.getElementsByClassName('Fieldset-childRight u-size1of2 Fieldset-childBottom Textbox Textbox--iconLeft can-setfocus').type=hidden;
+
+        </script>
+
+         <button class="btn btn-dark btn-block">
+             Pagar con tarjeta
+         </button>
+      
+      </form>
+
+   
+
+      {{/if_equal}}
+      
+      <hr>
+    </div>
+
+
+
+  </div>
+
+</div>
+{{/if_equal}}
+
+{{/each}}
+{{/each}}
+
+
+{{!-- 
 
 
 
@@ -76,4 +249,4 @@
 {{/if_equal}}
 
 {{/each}}
-{{/each}}
+{{/each}} --}}

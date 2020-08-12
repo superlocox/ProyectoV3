@@ -15,7 +15,9 @@ sgMail.setApiKey(process.env.SENDGRID_KEY2);
 
 //para app movil
 const jwt = require('jsonwebtoken')
-const config = require('../config')
+const config = require('../config');
+const app = require('..');
+const { route } = require('.');
 
 router.post('/singup_api', async (req, res) => {
 
@@ -293,8 +295,12 @@ router.get('/users/signin', (req, res) => {
 router.post('/users/signin', passport.authenticate('local', {
 
 
+  
   failureRedirect: '/users/signin',
-  failureFlash: 'Ingrese bien sus credenciales'
+
+  //failureFlash: 'Ingrese bien sus credenciales'
+  badRequestMessage: 'Falta información',
+  failureFlash: true
 }), function (req, res, next) {
   if (req.session.oldUrl) {
     var oldUrl = req.session.oldUrl;
@@ -646,6 +652,31 @@ router.get('/dispositivo/pedidos', async (req, res) => {
 
 
 
+});
+
+router.get('/users/elegir_p', async(req, res) =>  {
+  const users = await User.find();
+  const pedidos = await Pedido.find();
+  res.render('users/elegir_p',{ users, pedidos });
+});
+
+
+router.get('/maps/seguimiento', isLogIn, (req, res) => {
+  res.render('maps/seguimiento');
+});
+
+
+const rooms ={}
+
+router.get('/users/index_chat', (req, res) => {
+  res.render('users/index_chat', {rooms:rooms});
+});
+
+router.get('/room', async(res,req)=> {
+  const pedidos = await Pedido.find();
+  const users = await User.find();
+
+  res.render('users/room',{pedidos,users});
 });
 
 
