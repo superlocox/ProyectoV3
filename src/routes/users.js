@@ -92,11 +92,27 @@ router.post('/sigin_api', async (req, res) => {
       return res.status(401).send({ auth: false, token: null });
       
     }
-    const token = jwt.sign({ id: user.id }, config.secreto, {
-      expiresIn: '24h'
-    });
-    res.status(200).json({ auth: true, token });
-    console.log("salio bien");
+
+    if(user.mensajero){
+
+      const token = jwt.sign({ id: user.id }, config.secreto, {
+        expiresIn: '24h'
+      });
+      res.status(201).json({ auth: true, token });
+      console.log("Mensajero logeado");
+
+    }
+    else{
+      
+      const token = jwt.sign({ id: user.id }, config.secreto, {
+        expiresIn: '24h'
+      });
+      res.status(200).json({ auth: true, token });
+      console.log("salio bien");
+
+    }
+
+   
 
 
   } catch (e) {
