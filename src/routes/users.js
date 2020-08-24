@@ -77,16 +77,26 @@ router.post('/sigin_api', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email })
     if (!user) {
+      console.log("email no existe");
       return res.status(400).send('Email no existe')
+      
     }
-    const validPaswword = await (req.body.password, user.password)
-    if (!validPaswword) {
+    const password = req.body.password;
+
+    const match = await user.matchPassword(password);
+    //const validPaswword = await (req.body.password, user.password)
+    console.log(match);
+  
+    if (!match) {
+      console.log("salio mal");
       return res.status(401).send({ auth: false, token: null });
+      
     }
     const token = jwt.sign({ id: user.id }, config.secreto, {
       expiresIn: '24h'
     });
     res.status(200).json({ auth: true, token });
+    console.log("salio bien");
 
 
   } catch (e) {
