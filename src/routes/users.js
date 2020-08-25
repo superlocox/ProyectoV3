@@ -19,6 +19,12 @@ const config = require('../config');
 const app = require('..');
 const { route } = require('.');
 
+router.get('/api/users', async (req, res)=>{
+  const users = await User.find();
+  res.json({users});
+
+})
+
 router.post('/singup_api', async (req, res) => {
 
   try {
@@ -76,6 +82,9 @@ router.post('/singup_api', async (req, res) => {
 router.post('/sigin_api', async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email })
+    console.log(req.body.email);
+    console.log("Esto fue:");
+    console.log(user);
     if (!user) {
       console.log("email no existe");
       return res.status(400).send('Email no existe')
@@ -98,8 +107,9 @@ router.post('/sigin_api', async (req, res) => {
       const token = jwt.sign({ id: user.id }, config.secreto, {
         expiresIn: '24h'
       });
-      res.status(201).json({ auth: true, token });
       console.log("Mensajero logeado");
+      return res.status(201).json({ auth: true, token });
+
 
     }
     else{
@@ -107,8 +117,9 @@ router.post('/sigin_api', async (req, res) => {
       const token = jwt.sign({ id: user.id }, config.secreto, {
         expiresIn: '24h'
       });
-      res.status(200).json({ auth: true, token });
       console.log("salio bien");
+      return res.status(200).json({ auth: true, token });
+ 
 
     }
 
