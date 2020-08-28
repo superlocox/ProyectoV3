@@ -25,6 +25,83 @@ router.get('/api/users', async (req, res)=>{
 
 })
 
+
+router.get('/api/pedidos',async(req,res)=>{
+  const pedidos = await Pedido.find();
+  res.json({pedidos});
+})
+
+router.post('/elegir_api', async(req,res)=>{
+  try{
+    const {_id} = req.body;
+    const pedido = await Pedido.findById(_id);
+    console.log('Antes');
+    console.log(pedido.estado);
+    
+    pedido.estado = "En progreso";
+
+    console.log('Despues');
+    console.log(pedido.estado);
+    pedido.save();
+    return res.status(200);
+    
+  }catch (e) {
+    console.log(e)
+    res.status(500).send('Algo salio mal');
+  }
+
+
+
+})
+
+router.post('/finalizar_api', async(req,res)=>{
+  try{
+    const {_id} = req.body;
+    const pedido = await Pedido.findById(_id);
+    console.log('Antes');
+    console.log(pedido.estado);
+    
+    pedido.estado = "Realizado";
+
+    console.log('Despues');
+    console.log(pedido.estado);
+    pedido.save();
+    return res.status(200);
+    
+  }catch (e) {
+    console.log(e)
+    res.status(500).send('Algo salio mal');
+  }
+
+
+
+})
+
+router.post('/mis_pedidos_api', async (req,res)=>{
+
+  const { user} = req.body;
+
+  const usuario = await User.findOne({ email: user });
+
+  Pedido.find({ user: usuario }, function (err, pedidos) {
+    if (err) {
+      return res.write('Error!');
+    }
+    var cart;
+    pedidos.forEach(function (pedido) {
+      cart = new Cart(pedido.cart);
+      pedido.items = cart.generateArray();
+
+    });
+
+    res.json({pedidos});
+
+  });
+
+
+})
+
+
 router.post('/singup_api', async (req, res) => {
 
   try {
@@ -81,7 +158,11 @@ router.post('/singup_api', async (req, res) => {
 
 router.post('/sigin_api', async (req, res) => {
   try {
+    const {lat, lng} = req.body;
     const user = await User.findOne({ email: req.body.email })
+    
+
+
     console.log(req.body.email);
     console.log("Esto fue:");
     console.log(user);
@@ -103,6 +184,9 @@ router.post('/sigin_api', async (req, res) => {
     }
 
     if(user.mensajero){
+      user.lat=lat;
+    user.lng=lng;
+    user.save();
 
       const token = jwt.sign({ id: user.id }, config.secreto, {
         expiresIn: '24h'
@@ -113,6 +197,9 @@ router.post('/sigin_api', async (req, res) => {
 
     }
     else{
+      user.lat=lat;
+    user.lng=lng;
+    user.save();
       
       const token = jwt.sign({ id: user.id }, config.secreto, {
         expiresIn: '24h'
@@ -637,6 +724,7 @@ router.get('/users/mis_pedidos', isLogIn, function (req, res, next) {
 
 
 });
+
 
 
 

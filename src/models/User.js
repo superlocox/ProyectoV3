@@ -15,7 +15,9 @@ const UserSchema = new Schema({
   mensajero:{type:Boolean,required:true},
   verificado: {type:Boolean,require:true},
   email_token:{type: String},
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  lat:{type: String},
+  lng:{type: String},
 });
 
 UserSchema.methods.encryptPassword = async (password) => {

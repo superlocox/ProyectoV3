@@ -1,3 +1,7 @@
+const Productos = require("./Productos");
+
+
+
 module.exports = function Cart(CarritoAntiguo){
     this.items = CarritoAntiguo.items || {};
     this.cantTotal = CarritoAntiguo.cantTotal || 0;
@@ -16,6 +20,24 @@ module.exports = function Cart(CarritoAntiguo){
 
 
     };
+
+    this.addpercount = async(id,count)=>{
+
+        //console.log(id);
+
+        var itemAlmacenado = await Productos.findById(id);
+        console.log("Producto:");
+        console.log(itemAlmacenado);
+        itemAlmacenado.cantidad = count;
+        console.log(count);
+        console.log(itemAlmacenado.cantidad);
+        itemAlmacenado.precio= itemAlmacenado.precio * itemAlmacenado.cantidad;
+        this.cantTotal += itemAlmacenado.cantidad;
+        this.precioTotal += itemAlmacenado.precio;
+        console.log("Entro");
+
+
+    }
 
     this.reduceByOne = function (id) {
     

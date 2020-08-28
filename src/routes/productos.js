@@ -6,6 +6,7 @@ const fs = require('fs');
 const Pedido = require('../models/Pedido');
 const { isAuthenticated } = require('../helpers/auth');
 const readline = require('readline');
+const User = require('../models/User');
 
 
 // if (process.env.NODE_ENV !== 'production') {
@@ -21,6 +22,8 @@ const stripe = require('stripe')('sk_test_Y20a1WyCOc9YxyjZyT1ppq4l008RKslg6a');
 // Models
 const Productos = require('../models/Productos');
 const Cart = require("../models/Carrito");
+const Carrito = require('../models/Carrito');
+const { session } = require('passport');
 
 router.get('/api/productos', async (req, res)=>{
     const productos = await Productos.find();
@@ -219,17 +222,148 @@ router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
     }); */
 })
 
+router.post('/pedido_api', async(req,res)=>{
+
+    try{
+        const { user, cart, pago} = req.body;
+
+        
+
+        var cc = "id: ";
+        var ids = [];
+        var cantidades = [];
+
+        for(var index = cart.indexOf(cc);index >=0;index =cart.indexOf(cc, index+1) )
+        {
+
+
+            //console.log("El id es:");
+           // console.log(cart.substring(index+4,index+28));
+            ids.push(cart.substring(index+4,index+28));
+
+
+        }
+
+        var dd = "cantidad: ";
+
+
+        for(var index = cart.indexOf(dd);index >=0;index =cart.indexOf(dd, index+1) )
+        {
+
+
+           // console.log("La cantidad es:");
+            //console.log(cart.substring(index+10,index+11));
+            cantidades.push(cart.substring(index+10,index+11));
+
+
+        }
+
+       /* 
+        console.log(ids[1]);
+        console.log(ids);
+        console.log(cantidades);
+
+        */
+
+        
+   
+       
+
+        var carrrito = new Cart(req.session.cart ? req.session.cart:{});
+        for(var index = 0; index<ids.length;index++){
+            carrrito.addpercount(ids[index],cantidades[index]);
+            console.log(index);
+            console.log(carrrito);
+        }
+
+        console.log("El carrito es");
+
+        console.log(carrrito);
+
+
+
+
+
+
+  
+        
+
+        const usuario = await User.findOne({ email: user });
+        console.log('El usuario es:');
+        //console.log(usuario);
+
+        if(!cart){
+            console.log("Salio mal");
+            return res.status(400).send('No tienes artículos');
+            
+        }else{
+            const pedido = new Pedido({
+                usuario,
+                cart,
+                pago,
+                activo: true,
+                estado: "En cola",
+                id_mensajero: 'null',
+                id_pago:'null'
+    
+            });
+    
+           // pedido.save();
+            console.log("Se guardo");
+    
+            return res.status(200).json('Pedido Realizado');
+        }
+        
+       
+
+
+
+    }catch (e) {
+        console.log(e)
+        res.status(500).send('Hubo un problema al realizar el pedido');
+      }
+
+
+      /*
+        console.log(user);
+
+        console.log(cart);
+        //console.log(cart.items);
+
+        cart.array.forEach(element => {
+           
+            console.log( cart[element]);
+
+        });
+
+
+        var carrrito = new Cart();
+        for (let index = 0; index < cart.length; index++) {
+            console.log('El id es: '+cart[index].id);
+            console.log('La cantidad es:'+ cart[index].cantidad);
+            carrrito.addpercount(cart[index].id,cart[index].cantidad);
+            
+            
+        }
+        console.log(carrrito);
+        */
+
+    
+});
+
 
 router.post('/pedido',isLogIn, async(req,res)=>{
 
     const pedido = new Pedido({
         user: req.user,
+        username: req.user.name,
         cart: req.session.cart,
+        pago: req.body.pago,
         activo: true,
         estado: "En cola",
         id_mensajero: 'null',
-        pago: req.body.pago,
-        id_pago:'null'
+        id_pago:'null',
+        mensajero:'null'
 
     });
 

@@ -3,12 +3,14 @@ var { Schema } = mongoose;
 
 var PedidoSchema = new Schema({
     user: {type: Schema.Types.ObjectId, ref:'User'},
-    cart: {type: Object, required:true},
+    username: {type:String},
+    cart: {type: Object},
     id_pago: {type: String},
     activo: {type: Boolean, required: true},
     estado: {type: String, required: true},
     pago:{type: String, required:true},
-    id_mensajero:{type:String}
+    id_mensajero:{type:String},
+    mensajero:{type:String}
 
 });
 
