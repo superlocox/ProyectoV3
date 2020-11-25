@@ -10,7 +10,11 @@ var PedidoSchema = new Schema({
     estado: {type: String, required: true},
     pago:{type: String, required:true},
     id_mensajero:{type:String},
-    mensajero:{type:String}
+    mensajero:{type:String},
+    latclient:{type: Number},
+    lngclient:{type: Number},
+    latmen:{type: Number},
+    lngmen:{type: Number},
 
 });
 

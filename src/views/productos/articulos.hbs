@@ -2,10 +2,10 @@
 <table border="1px" cellpadding="5px" width="100%"  class="table-light table-bordered">
     <thead>
          <tr>
-        <th>Nombre del producto</th>
-        <th>Foto</th>
-        <th>Precio</th>
-        <th>Cantidad</th>
+        <th class="text-center">Nombre del producto</th>
+        <th class="text-center">Foto</th>
+        <th class="text-center">Precio</th>
+        <th class="text-center">Cantidad</th>
         <th>Accion</th>
         </tr>
     </thead>
@@ -13,10 +13,16 @@
         
         {{#each productos}}
    <tr>
-        <td>{{nombre_producto}}</td>
+        <td class="text-center">{{nombre_producto}}</td>
     <td><img src="{{imgPath}}" class="card-img" alt="{{filename}}" ></td>
     <td class="text-center">${{precio}}</td>
     <td class="text-center">{{cantidad}}</td>
+    <td>
+        <a href="/productos/{{_id}}"><i class="fa fa-pencil fa-lg" aria-hidden="false"></i></a>
+
+        <a href="/productos/delete/{{_id}}" onclick="return confirm('Seguro que quieres eliminar este producto?');"><i class="fa fa-trash fa-lg" aria-hidden="true"></i></a>
+
+    </td>
 
   
  

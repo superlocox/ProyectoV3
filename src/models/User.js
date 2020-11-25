@@ -10,14 +10,13 @@ const UserSchema = new Schema({
   email: { type: String,   required: true },
   password: { type: String, required: true },
   admin:{type:Boolean,required:true},
-  resetpwToken: String,
-  resetpwExpires: Date,
   mensajero:{type:Boolean,required:true},
   verificado: {type:Boolean,require:true},
   email_token:{type: String},
   date: { type: Date, default: Date.now },
-  lat:{type: String},
-  lng:{type: String},
+  resetpwToken: String,
+  resetpwExpires: Date,
+ 
 });
 
 UserSchema.methods.encryptPassword = async (password) => {
@@ -30,6 +29,6 @@ UserSchema.methods.matchPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-UserSchema.plugin(passportLocalMongoose);
+//UserSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('User', UserSchema);

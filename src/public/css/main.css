@@ -49,6 +49,7 @@ nav ul {
   
 }
 
+
 .clearfix{
   margin:10px;
 }
@@ -74,6 +75,7 @@ table, th, td {
 
 th, td {
   padding: 2px 4px;
+  
 }
 
 /* images*/
@@ -188,3 +190,4 @@ img{
   top: 0;
   position: absolute;
 }
+

@@ -22,8 +22,165 @@ const stripe = require('stripe')('sk_test_Y20a1WyCOc9YxyjZyT1ppq4l008RKslg6a');
 // Models
 const Productos = require('../models/Productos');
 const Cart = require("../models/Carrito");
-const Carrito = require('../models/Carrito');
+const Carrito = require('../models/Cart');
 const { session } = require('passport');
+
+
+
+
+// router.post('/elegir_p_api', async(req, res)=>{
+
+//     try{
+//         const{ _id , latmen, lngmen, email } = req.body;
+
+//         const usuario = await User.findOne({ _id: _id });
+
+
+//     }
+
+
+
+// });
+
+router.post('/pedido_api', async(req,res)=>{
+
+    try{
+        const { user, cart, pago, latclient, lngclient} = req.body;
+
+        var cc = "id: ";
+        var ids = [];
+        var cantidades = [];
+
+        for(var index = cart.indexOf(cc);index >=0;index =cart.indexOf(cc, index+1) )
+        {
+           // console.log(cart.substring(index+4,index+28));
+            ids.push(cart.substring(index+4,index+28));
+        }
+        var dd = "cantidad: ";
+
+        for(var index = cart.indexOf(dd);index >=0;index =cart.indexOf(dd, index+1) )
+        {
+            //console.log(cart.substring(index+10,index+11));
+            cantidades.push(cart.substring(index+10,index+11));
+        }
+
+
+        var carrito = new Carrito();
+
+        var cantidadT = 0;
+        var precioT= 0;
+        var el_carrito = [];
+        var carx = {};
+
+        for(var index = 0; index<ids.length;index++){
+            var itemAlmacenado = await Productos.findById(ids[index]);
+            console.log("El item es:  -")
+            console.log(itemAlmacenado);
+            itemAlmacenado.cantidad = cantidades[index];
+            console.log(itemAlmacenado.cantidad);
+            cantidadT += itemAlmacenado.cantidad;
+            precioT += itemAlmacenado.precio*cantidades[index];
+    
+            carx [itemAlmacenado._id] = itemAlmacenado;
+            //el_carrito.push({items: itemAlmacenado});
+
+
+        }
+
+
+        console.log('los items son:');
+        console.log(carx);
+        console.log('Cant T: ');
+        
+        carrito.cantTotal = cantidadT;
+
+        console.log(carrito.cantTotal);
+        carrito.precioTotal = precioT;
+
+
+        console.log('Precio Total: ');
+        console.log(carrito.precioTotal);
+
+        carrito.items = carx;
+
+        const usuario = await User.findOne({ email: user });
+        console.log('El usuario es:');
+        console.log(usuario.id);
+
+
+        
+
+
+        if(!carrito){
+            console.log("Salio mal");
+            return res.status(400).send('No tienes artículos');
+            
+        }else{
+
+            const pedido = new Pedido({
+                user: usuario,
+                username: usuario.name,
+                cart: carrito,
+                pago: pago,
+                activo: true,
+                estado: "En cola",
+                id_mensajero: 'null',
+                id_pago:'null',
+                latclient: latclient,
+                lngclient: lngclient
+    
+            });
+
+
+            pedido.markModified(cart);
+    
+            pedido.save(function(err, result){
+     
+                console.log("Se guardoooo");
+            })
+        
+    
+            return res.status(200).json('Pedido Realizado');
+        }
+        
+       
+
+
+
+    }catch (e) {
+        console.log(e)
+        res.status(500).send('Hubo un problema al realizar el pedido');
+      }
+
+
+      /*
+        console.log(user);
+
+        console.log(cart);
+        //console.log(cart.items);
+
+        cart.array.forEach(element => {
+           
+            console.log( cart[element]);
+
+        });
+
+
+        var carrrito = new Cart();
+        for (let index = 0; index < cart.length; index++) {
+            console.log('El id es: '+cart[index].id);
+            console.log('La cantidad es:'+ cart[index].cantidad);
+            carrrito.addpercount(cart[index].id,cart[index].cantidad);
+            
+            
+        }
+        console.log(carrrito);
+        */
+
+    
+});
+
+
 
 router.get('/api/productos', async (req, res)=>{
     const productos = await Productos.find();
@@ -48,7 +205,7 @@ router.get('/productos/lista_productos',async(req,res)=>{
     res.render('productos/lista_productos',{productos});
 })
 
-router.get('/productos/articulos',async(req,res)=>{
+router.get('/productos/articulos', isLogIn ,async(req,res)=>{
     const productos = await Productos.find();
     //console.log(productos);
     res.render('productos/articulos',{productos});
@@ -99,10 +256,51 @@ router.post('/productos/add_product', async (req, res) => {
         
             await newProduct.save();
             req.flash('success_msg', 'Se registro el producto.');
-            res.redirect('/notes');
+            res.redirect('/productos/articulos');
             
         }
     }
+});
+
+
+router.get('/productos/:id', (req, res) => {
+    Productos.findById(req.params.id, (err, doc) => {
+        if (!err) {
+           // console.log(doc);
+            res.render("\productos/product_edit", {
+                producto: doc
+            });
+        }
+    });
+});
+
+
+router.post('/update_product', async (req,res)=>{
+
+    Productos.findOneAndUpdate({_id: req.body._id}, req.body, {new: true}, (err, doc)=>{
+        if(!err){
+            res.redirect('/productos/articulos');
+        }
+        else{
+
+            res.render("\productos/product_edit", {
+                producto: doc
+            });
+            console.log('Error during record update : ' + err);
+
+        }
+    })
+
+
+});
+
+router.get('/productos/delete/:id', (req, res) => {
+    Productos.findByIdAndRemove(req.params.id, (err, doc) => {
+        if (!err) {
+            res.redirect('/productos/articulos');
+        }
+        else { console.log('Error in employee delete :' + err); }
+    });
 });
 
 /*
@@ -184,15 +382,15 @@ router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
     
    
 
-  })
+  });
 
   router.get('/productos/carrito',  async(req,res)=>{
-      if(!req.session.cart){
-          return res.render('productos/carrito',{product:null});
-      }
-      var cart =  new Cart(req.session.cart);
-      res.render('productos/carrito',{product:cart.generateArray(),Preciototal: cart.precioTotal} );
-  });
+    if(!req.session.cart){
+        return res.render('productos/carrito',{product:null});
+    }
+    var cart =  new Cart(req.session.cart);
+    res.render('productos/carrito',{product:cart.generateArray(),Preciototal: cart.precioTotal} );
+});
 
   router.get('/productos/pago', isLogIn, async(req, res) => {
     if(!req.session.cart){
@@ -220,7 +418,7 @@ router.get('/productos/show/add-to-cart/:id', async(req,res)=>{
         document.getElementById("card-card-holder-name").value = holderName;
         console.log(press);
     }); */
-});
+})
 
 
 router.post('/pedido',isLogIn, async(req,res)=>{

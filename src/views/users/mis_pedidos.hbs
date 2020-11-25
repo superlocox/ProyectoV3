@@ -29,14 +29,15 @@
 
               </tr>
             </thead>
+            
 
-            {{#each this.items}}
+            {{#each this.cart.items}}
             <tbody>
               <tr>
-                <td><img src="{{this.item.imgPath}}" class="card-img" alt="{{filename}}" ></td>
-                <td> {{this.item.nombre_producto}} </td>
+                <td><img src="{{this.imgPath}}" class="card-img" alt="{{filename}}" ></td>
+                <td> {{this.nombre_producto}} </td>
                 <td class="text-center"> <span class="badge">
-                    RD$ {{this.item.precio}}
+                    RD$ {{this.precio}}
                   </span></td>
                 <td class="text-center">{{this.cantidad}}</td>
 

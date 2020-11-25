@@ -25,24 +25,86 @@ router.get('/api/users', async (req, res)=>{
 
 })
 
+router.post('/api_cancelar', async (req, res)=>{
+  try{
+
+    
+    const { id } = req.body;
+
+    const pedido = await Pedido.findById(id);
+
+    pedido.estado = "Cancelado";
+
+    pedido.save();
+
+    console.log('Se fue');
+    return res.status(200);
+  } catch (e) {
+    console.log(e)
+    res.status(500).send('Algo salio mal');
+  }
+
+
+});
+
 
 router.get('/api/pedidos',async(req,res)=>{
   const pedidos = await Pedido.find();
   res.json({pedidos});
 })
 
+router.post('/api/pedidos_cliente', async (req,res)=>{
+
+  const { email} = req.body;
+
+  const usuario = await User.findOne({ email: email });
+  console.log(email);
+
+  Pedido.find({ user: usuario }, function (err, pedidos) {
+    if (err) {
+      return res.write('Error!');
+    }
+    // var cart;
+    pedidos.forEach(function (pedido) {
+      // cart = new Cart(pedido.cart);
+      // pedido.items = cart.generateArray();
+
+    });
+    console.log("mis pedidos");
+    console.log(pedidos);
+
+    res.json({pedidos});
+
+  });
+
+
+})
+
 router.post('/elegir_api', async(req,res)=>{
   try{
-    const {_id} = req.body;
+
+    const{ _id , latmen, lngmen, email } = req.body;
     const pedido = await Pedido.findById(_id);
+
     console.log('Antes');
     console.log(pedido.estado);
     
-    pedido.estado = "En progreso";
+    //pedido.estado = "En progreso";
 
     console.log('Despues');
     console.log(pedido.estado);
+
+    pedido.latmen = latmen;
+    pedido.lngmen = lngmen;
+
+    const usuario = await User.findOne({ email: email });
+
+    pedido.id_mensajero = usuario._id;
+    pedido.mensajero = usuario.name;
+
     pedido.save();
+
+    console.log('Paso');
     return res.status(200);
     
   }catch (e) {
@@ -61,7 +123,7 @@ router.post('/finalizar_api', async(req,res)=>{
     console.log('Antes');
     console.log(pedido.estado);
     
-    pedido.estado = "Realizado";
+    pedido.estado = "Completado";
 
     console.log('Despues');
     console.log(pedido.estado);
@@ -241,7 +303,7 @@ router.post('/users/signup', async (req, res) => {
 
 
   let errors = [];
-  const { name, apellido, celular, email, password, confirm_password, jer } = req.body;
+  const { name, apellido, celular, email, password, confirm_password } = req.body;
 
   const celularUser = await User.findOne({ celular: celular });
   const emailUser = await User.findOne({ email: email });
@@ -277,34 +339,37 @@ router.post('/users/signup', async (req, res) => {
     // Saving a New User
     mensajero = false;
     admin = false;
-    verificado = false;
+    verificado = true;
     email_token = crypto.randomBytes(64).toString('hex');
     const newUser = new User({ name, apellido, celular, email, password, admin, mensajero, verificado, email_token });
     newUser.password = await newUser.encryptPassword(password);
     await newUser.save();
 
-    newUser.password = await newUser.encryptPassword(password);
-    await newUser.save().then((result)=>{
-      const msg={
-        from: 'superlocox@hotmail.es',
-        to: newUser.email,
-        subject: 'SADE - Verificación de cuenta',
-        text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó crear una cuenta en nuestro sitio web.'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/verify/' + email_token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
-      }
-       sgMail.send(msg).then(() => {
-        console.log('Message sent')
-        req.flash('success_msg', 'El correo fue enviado a '+ newUser.email+ ' con instrucciones para completar este proceso');
-        res.redirect('/users/signin');
+    //newUser.password = await newUser.encryptPassword(password);
+    // await newUser.save().then((result)=>{
+    //   const msg={
+    //     from: 'superlocox@hotmail.es',
+    //     to: newUser.email,
+    //     subject: 'SADE - Verificación de cuenta',
+    //     text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó crear una cuenta en nuestro sitio web.'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/verify/' + email_token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
+    //   }
+    //    sgMail.send(msg).then(() => {
+    //     console.log('Message sent')
+    //     req.flash('success_msg', 'El correo fue enviado a '+ newUser.email+ ' con instrucciones para completar este proceso');
+    //     res.redirect('/users/signin');
         
-    }).catch((error) => {
-        console.log(error.response.body)
-        // console.log(error.response.body.errors[0].message)
-    })
-    })
+    // }).catch((error) => {
+    //     console.log(error.response.body)
+    //     // console.log(error.response.body.errors[0].message)
+    // })
+    // })
 
-    const token = jwt.sign({ id: newUser.id }, config.secreto, {
-      expiresIn: '24h'
-    });
+    // const token = jwt.sign({ id: newUser.id }, config.secreto, {
+    //   expiresIn: '24h'
+    // });
+
+    req.flash('success_msg', 'Cuenta registrada.');
+    res.redirect('/users/signin');
 
 
 
@@ -713,10 +778,14 @@ router.get('/users/mis_pedidos', isLogIn, function (req, res, next) {
     }
     var cart;
     pedidos.forEach(function (pedido) {
-      cart = new Cart(pedido.cart);
-      pedido.items = cart.generateArray();
+      //cart = new Cart(pedido.cart);
+      //pedido.items = cart.generateArray();
+
+      
 
     });
+
+    console.log(pedidos);
 
     res.render('users/mis_pedidos', { pedidos: pedidos });
 
