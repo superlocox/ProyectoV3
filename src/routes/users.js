@@ -53,6 +53,29 @@ router.get('/api/pedidos',async(req,res)=>{
   res.json({pedidos});
 })
 
+
+router.post('/api/pedidos_articulo', async(req,res)=>{
+
+  const {email, pedido_id} = req.body;
+
+  const pedido = await Pedido.findById(pedido_id);
+
+  console.log('Los articulos son');
+
+  console.log(pedido);
+
+  console.log(pedido.cart.items);
+
+  const cart = pedido.cart.items;
+
+  console.log(cart.length);
+
+  res.json(cart);
+
+
+
+})
+
 router.post('/api/pedidos_cliente', async (req,res)=>{
 
   const { email} = req.body;
@@ -60,18 +83,31 @@ router.post('/api/pedidos_cliente', async (req,res)=>{
   const usuario = await User.findOne({ email: email });
   console.log(email);
 
-  Pedido.find({ user: usuario }, function (err, pedidos) {
+  //const pedidox = new Pedido;
+
+  Pedido.find({ user: usuario, estado:"En cola" || "En progreso" }, function (err, pedidos) {
     if (err) {
       return res.write('Error!');
     }
     // var cart;
-    pedidos.forEach(function (pedido) {
-      // cart = new Cart(pedido.cart);
-      // pedido.items = cart.generateArray();
-
-    });
-    console.log("mis pedidos");
+    console.log("los pedidos son");
     console.log(pedidos);
+
+
+    //pedidos.find({estado:"En cola", estado:"En progreso"});
+    // pedidos.forEach(function (pedido) {
+    //   // cart = new Cart(pedido.cart);
+    //   // pedido.items = cart.generateArray();
+    //   if(pedido.estado == 'En cola' || pedido.estado == 'En progreso'){
+
+
+        
+    //    //pedidox.save(pedido);
+    //   }
+
+    // });
+    console.log("mis pedidos");
+    //console.log(pedidos);
 
     res.json({pedidos});
 
@@ -180,7 +216,7 @@ router.post('/singup_api', async (req, res) => {
 
       mensajero = false;
       admin = false;
-      verificado = false;
+      verificado = true;
       email_token = crypto.randomBytes(64).toString('hex');
       const user = new User({ name, apellido, celular, email, password, admin, mensajero, verificado, email_token });
 
@@ -188,20 +224,20 @@ router.post('/singup_api', async (req, res) => {
 
       user.password = await user.encryptPassword(password);
       await user.save().then((result)=>{
-        const msg={
-          from: 'superlocox@hotmail.es',
-          to: user.email,
-          subject: 'SADE - Verificación de cuenta',
-          text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó crear una cuenta en nuestro sitio web.'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/verify/' + email_token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
-        }
-         sgMail.send(msg).then(() => {
-          console.log('Message sent')
+      //   const msg={
+      //     from: 'superlocox@hotmail.es',
+      //     to: user.email,
+      //     subject: 'SADE - Verificación de cuenta',
+      //     text: 'Estás recibiendo este correo debido a que tú (o alguien más) solicitó crear una cuenta en nuestro sitio web.'+ '\n'+ 'Favor de dar clic o copiar el siguiente para completar este proceso'+'\n'+ 'http://'+ req.headers.host + '/users/verify/' + email_token + '\n\n'+'Si usted no solicitó este proceso, favor de ignorar el mensaje y su contraseña seguirá igual'
+      //   }
+      //    sgMail.send(msg).then(() => {
+      //     console.log('Message sent')
           
           
-      }).catch((error) => {
-          console.log(error.response.body)
-          // console.log(error.response.body.errors[0].message)
-      })
+      // }).catch((error) => {
+      //     console.log(error.response.body)
+      //     // console.log(error.response.body.errors[0].message)
+      // })
       })
 
       const token = jwt.sign({ id: user.id }, config.secreto, {
