@@ -4,7 +4,7 @@ var { Schema } = mongoose;
 var PedidoSchema = new Schema({
     user: {type: Schema.Types.ObjectId, ref:'User'},
     username: {type:String},
-    cart: {type: Object},
+    cart: {type: Schema.Types.ObjectId, ref:'Cart'},
     id_pago: {type: String},
     activo: {type: Boolean, required: true},
     estado: {type: String, required: true},
@@ -15,6 +15,12 @@ var PedidoSchema = new Schema({
     lngclient:{type: Number},
     latmen:{type: Number},
     lngmen:{type: Number},
+
+
+
+    productos: [{type: Schema.Types.ObjectId, ref:'Productos' }],
+    cantTotal: { type: Number },
+    precioTotal: { type: Number },
 
 });
 

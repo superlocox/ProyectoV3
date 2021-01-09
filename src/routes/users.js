@@ -58,17 +58,20 @@ router.post('/api/pedidos_articulo', async(req,res)=>{
 
   const {email, pedido_id} = req.body;
 
-  const pedido = await Pedido.findById(pedido_id);
+  //const pedido = await Pedido.findById(pedido_id);
 
+  const pedido = await Pedido.findById(pedido_id).populate('cart');
+
+  //const pedido = await Pedido.findById(pedido_id).populate({path: 'cart', model: 'Cart', populate: { path: 'items', model :"productos"}});
   console.log('Los articulos son');
 
   console.log(pedido);
 
   console.log(pedido.cart.items);
 
-  const cart = pedido.cart.items;
+  const cart = pedido.cart;
 
-  console.log(cart.length);
+  console.log(cart);
 
   res.json(cart);
 
@@ -85,12 +88,19 @@ router.post('/api/pedidos_cliente', async (req,res)=>{
 
   //const pedidox = new Pedido;
 
+  const pedidox = await Pedido.find({ user: usuario, estado:"En cola" || "En progreso" }).populate(['productos']);
+
+  console.log('Los pedidox son:')
+
+  console.log(pedidox.productos);
+
   Pedido.find({ user: usuario, estado:"En cola" || "En progreso" }, function (err, pedidos) {
     if (err) {
       return res.write('Error!');
     }
     // var cart;
     console.log("los pedidos son");
+    
     console.log(pedidos);
 
 
@@ -112,6 +122,7 @@ router.post('/api/pedidos_cliente', async (req,res)=>{
     res.json({pedidos});
 
   });
+  
 
 
 })

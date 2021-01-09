@@ -22,6 +22,7 @@ const stripe = require('stripe')('sk_test_Y20a1WyCOc9YxyjZyT1ppq4l008RKslg6a');
 // Models
 const Productos = require('../models/Productos');
 const Cart = require("../models/Carrito");
+const Cartx = require("../models/Cart");
 const Carrito = require('../models/Cart');
 const { session } = require('passport');
 
@@ -65,12 +66,14 @@ router.post('/pedido_api', async(req,res)=>{
         }
 
 
-        var carrito = new Carrito();
+        var carrito = new Cartx();
 
         var cantidadT = 0;
         var precioT= 0;
         var el_carrito = [];
-        var carx = {};
+
+        var carx = [];
+       // var carx = {};
 
         for(var index = 0; index<ids.length;index++){
             var itemAlmacenado = await Productos.findById(ids[index]);
@@ -81,7 +84,8 @@ router.post('/pedido_api', async(req,res)=>{
             cantidadT += itemAlmacenado.cantidad;
             precioT += itemAlmacenado.precio*cantidades[index];
     
-            carx [itemAlmacenado._id] = itemAlmacenado;
+            //carx [itemAlmacenado._id] = itemAlmacenado;
+            carx.push(itemAlmacenado);
             //el_carrito.push({items: itemAlmacenado});
 
 
@@ -101,11 +105,21 @@ router.post('/pedido_api', async(req,res)=>{
         console.log('Precio Total: ');
         console.log(carrito.precioTotal);
 
+        carrito.index = index;
+
+
         carrito.items = carx;
 
         const usuario = await User.findOne({ email: user });
         console.log('El usuario es:');
         console.log(usuario.id);
+
+
+        console.log('El carrito es es:');
+
+        console.log(carrito.items);
+
+
 
 
         
@@ -127,7 +141,14 @@ router.post('/pedido_api', async(req,res)=>{
                 id_mensajero: 'null',
                 id_pago:'null',
                 latclient: latclient,
-                lngclient: lngclient
+                lngclient: lngclient,
+
+
+
+                productos: carx,
+                cantTotal: cantidadT,
+                precioTotal: precioT,
+
     
             });
 
