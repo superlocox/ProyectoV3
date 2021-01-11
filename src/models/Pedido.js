@@ -18,7 +18,13 @@ var PedidoSchema = new Schema({
 
 
 
-    productos: [{type: Schema.Types.ObjectId, ref:'Productos' }],
+    productos: [{ type: Object }],
+
+    nombre_producto: [{ type: String}],
+    precio: [{ type: String}],
+    cantidad: [{ type: String}],
+    imgPath: [{ type: String}],
+    index: {type: Number},
     cantTotal: { type: Number },
     precioTotal: { type: Number },
 

@@ -65,13 +65,13 @@ router.post('/api/pedidos_articulo', async(req,res)=>{
   //const pedido = await Pedido.findById(pedido_id).populate({path: 'cart', model: 'Cart', populate: { path: 'items', model :"productos"}});
   console.log('Los articulos son');
 
-  console.log(pedido);
+  //console.log(pedido);
 
-  console.log(pedido.cart.items);
+  //console.log(pedido.cart.items);
 
   const cart = pedido.cart;
 
-  console.log(cart);
+  //console.log(cart);
 
   res.json(cart);
 
@@ -88,20 +88,41 @@ router.post('/api/pedidos_cliente', async (req,res)=>{
 
   //const pedidox = new Pedido;
 
-  const pedidox = await Pedido.find({ user: usuario, estado:"En cola" || "En progreso" }).populate(['productos']);
+  const pedidox = await Pedido.find({ $and: [ {user: usuario}],  $or:[ {estado:"En cola"},{ estado: "En progreso"}] } );
 
-  console.log('Los pedidox son:')
+  console.log('Los pedidox son:');
 
-  console.log(pedidox.productos);
+  // var p = pedidox.nombre_producto;
 
-  Pedido.find({ user: usuario, estado:"En cola" || "En progreso" }, function (err, pedidos) {
+  // console.log(p.toString);
+
+  //console.log(pedidox);
+
+  // var precio = pedidox.precio;
+
+  // precio.forEach((p)=>{
+  //   console.log(`${p.precio}`);
+  // })
+
+  //console.log(pedidox.precio[0]);
+
+//   var output = '';
+//     for (var property in pedidox.precio) {
+//     output += property + ' ';
+// }
+// console.log(output)
+
+  //console.log(JSON.stringify(pedidox.productos));
+  
+
+  Pedido.find({ $and: [ {user: usuario}],  $or:[ {estado:"En cola"},{ estado: "En progreso"}] }, function (err, pedidos) {
     if (err) {
       return res.write('Error!');
     }
     // var cart;
-    console.log("los pedidos son");
+    //console.log("los pedidos son");
     
-    console.log(pedidos);
+   // console.log(pedidos);
 
 
     //pedidos.find({estado:"En cola", estado:"En progreso"});
@@ -136,7 +157,7 @@ router.post('/elegir_api', async(req,res)=>{
     console.log('Antes');
     console.log(pedido.estado);
     
-    //pedido.estado = "En progreso";
+    pedido.estado = "En progreso";
 
     console.log('Despues');
     console.log(pedido.estado);
@@ -151,8 +172,12 @@ router.post('/elegir_api', async(req,res)=>{
 
     pedido.save();
 
+    
+
     console.log('Paso');
-    return res.status(200);
+
+    return res.status(200).send('Se eligio');
+    
     
   }catch (e) {
     console.log(e)
@@ -175,7 +200,7 @@ router.post('/finalizar_api', async(req,res)=>{
     console.log('Despues');
     console.log(pedido.estado);
     pedido.save();
-    return res.status(200);
+    res.status(200);
     
   }catch (e) {
     console.log(e)

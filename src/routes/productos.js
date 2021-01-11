@@ -72,17 +72,44 @@ router.post('/pedido_api', async(req,res)=>{
         var precioT= 0;
         var el_carrito = [];
 
+
+        var nombres_productos = [];
+        var precio = [];
+        var cantidad = [];
+        var imgPath = [];
+
+
         var carx = [];
        // var carx = {};
+
+       
 
         for(var index = 0; index<ids.length;index++){
             var itemAlmacenado = await Productos.findById(ids[index]);
             console.log("El item es:  -")
             console.log(itemAlmacenado);
+
+
             itemAlmacenado.cantidad = cantidades[index];
+
+
             console.log(itemAlmacenado.cantidad);
+
+
             cantidadT += itemAlmacenado.cantidad;
             precioT += itemAlmacenado.precio*cantidades[index];
+
+            
+
+
+            console.log("Los nombres son");
+
+            console.log(itemAlmacenado.nombre_producto);
+
+            nombres_productos.push(itemAlmacenado.nombre_producto);
+            precio.push(itemAlmacenado.precio);
+            cantidad.push(cantidades[index]);
+            imgPath.push(itemAlmacenado.imgPath);
     
             //carx [itemAlmacenado._id] = itemAlmacenado;
             carx.push(itemAlmacenado);
@@ -92,18 +119,24 @@ router.post('/pedido_api', async(req,res)=>{
         }
 
 
-        console.log('los items son:');
-        console.log(carx);
-        console.log('Cant T: ');
+        // console.log('los items son:');
+        // console.log(carx);
+        // console.log('Cant T: ');
         
+       
+
+        // console.log(carrito.cantTotal);
+        
+
+
+        // console.log('Precio Total: ');
+        // console.log(carrito.precioTotal);
+
+
+
         carrito.cantTotal = cantidadT;
 
-        console.log(carrito.cantTotal);
         carrito.precioTotal = precioT;
-
-
-        console.log('Precio Total: ');
-        console.log(carrito.precioTotal);
 
         carrito.index = index;
 
@@ -146,6 +179,11 @@ router.post('/pedido_api', async(req,res)=>{
 
 
                 productos: carx,
+                nombre_producto: nombres_productos,
+                precio: precio,
+                cantidad: cantidad,
+                imgPath: imgPath,
+                index: index,
                 cantTotal: cantidadT,
                 precioTotal: precioT,
 
